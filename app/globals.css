@@ -1,26 +1,222 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* -------------------------------------------------------------
+   THEME STYLES (Robust data-theme and .light selector support)
+---------------------------------------------------------------- */
+
+:root,
+[data-theme="dark"] {
+  --app-bg: #0b0f19;
+  --app-text: #f8fafc;
+  --panel-bg: rgba(17, 24, 39, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --card-bg: rgba(24, 32, 47, 0.7);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-hover-bg: rgba(30, 41, 59, 0.85);
+  --muted-text: #94a3b8;
+  --subtle-text: #64748b;
+  --input-bg: rgba(15, 23, 42, 0.8);
+  --input-border: #334155;
+  --input-text: #ffffff;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.light,
+[data-theme="light"],
+.viewflow-root.light {
+  --app-bg: #f8fafc !important;
+  --app-text: #0f172a !important;
+  --panel-bg: rgba(255, 255, 255, 0.95) !important;
+  --panel-border: rgba(226, 232, 240, 0.9) !important;
+  --card-bg: #ffffff !important;
+  --card-border: #e2e8f0 !important;
+  --card-hover-bg: #f8fafc !important;
+  --muted-text: #1e293b !important;
+  --subtle-text: #334155 !important;
+  --input-bg: #ffffff !important;
+  --input-border: #cbd5e1 !important;
+  --input-text: #0f172a !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.viewflow-root {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  min-height: 100vh;
+}
+
+/* Glass Panels & Cards */
+.glass-panel {
+  background: var(--panel-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border) !important;
+}
+
+.glass-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  transition: all 0.2s ease;
+}
+
+.glass-card:hover {
+  background: var(--card-hover-bg) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Light Mode Overrides with High Contrast Buttons & Tabs */
+html.light .viewflow-root,
+[data-theme="light"] {
+  /* General Typography */
+  h1, h2, h3, h4, h5, h6 {
+    color: #0f172a !important;
+  }
+
+  p {
+    color: #334155 !important;
+  }
+
+  /* Specific element text overrides (excluding filled buttons) */
+  :not(button):not(.bg-blue-600):not(.bg-emerald-600):not(.bg-rose-600) > .text-white {
+    color: #0f172a;
+  }
+
+  /* Make muted and secondary text much darker in light mode */
+  .text-slate-400 {
+    color: #334155 !important;
+  }
+  .text-slate-500 {
+    color: #475569 !important;
+  }
+  .text-slate-300 {
+    color: #1e293b !important;
+  }
+  .text-slate-200,
+  .text-slate-100 {
+    color: #0f172a !important;
+  }
+
+  /* CRITICAL: Active tabs and filled buttons MUST have crisp white text */
+  .active-nav-tab,
+  .active-nav-tab *,
+  aside nav button.active-nav-tab,
+  aside nav button.active-nav-tab span,
+  aside nav button.active-nav-tab svg,
+  .bg-blue-600,
+  .bg-blue-600 *,
+  .bg-emerald-600,
+  .bg-emerald-600 *,
+  .bg-rose-600,
+  .bg-rose-600 *,
+  button.bg-blue-600,
+  button.bg-blue-600 span,
+  button.bg-blue-600 svg {
+    color: #ffffff !important;
+    fill: none;
+  }
+
+  /* Inactive sidebar buttons styling for light mode */
+  aside nav button:not(.bg-blue-600) {
+    color: #475569 !important;
+  }
+  aside nav button:not(.bg-blue-600):hover {
+    color: #0f172a !important;
+    background-color: #f1f5f9 !important;
+  }
+  aside nav button:not(.bg-blue-600) svg {
+    color: #64748b !important;
+  }
+  aside nav button:not(.bg-blue-600):hover svg {
+    color: #2563eb !important;
+  }
+
+  /* Backgrounds */
+  .bg-slate-900,
+  .bg-slate-900\/80,
+  .bg-slate-900\/70,
+  .bg-slate-900\/60,
+  .bg-slate-900\/50,
+  .bg-slate-900\/40 {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .bg-slate-800,
+  .bg-slate-800\/80,
+  .bg-slate-800\/60,
+  .bg-slate-800\/50,
+  .bg-slate-800\/40 {
+    background-color: #f1f5f9 !important;
+  }
+
+  /* Borders */
+  .border-slate-800,
+  .border-slate-800\/80,
+  .border-slate-800\/60,
+  .border-slate-800\/70,
+  .border-slate-700,
+  .border-slate-700\/50,
+  .border-slate-700\/60 {
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Form Elements */
+  input,
+  select,
+  textarea {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Banners */
+  .from-slate-900\/80,
+  .from-blue-900\/40 {
+    background-image: linear-gradient(to right, #ffffff, #eff6ff) !important;
+    border-color: #dbeafe !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Vibe96 Card & Footer in Sidebar */
+  aside .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, #eff6ff, #f8fafc) !important;
+    border-color: #bfdbfe !important;
+  }
+  aside .bg-gradient-to-br p {
+    color: #475569 !important;
+  }
+
+  /* Sidebar Branding */
+  aside .bg-clip-text {
+    background-image: linear-gradient(to right, #1d4ed8, #3b82f6) !important;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--app-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+html.light ::-webkit-scrollbar-thumb,
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
 }
