@@ -32,30 +32,30 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
   return (
     <div className="min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white transition-colors duration-200">
       {/* Top Navbar matching CRM Theme */}
-      <header className="glass-panel sticky top-0 z-40 px-6 py-4 border-b">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0 brand-icon">
+      <header className="glass-panel sticky top-0 z-40 px-4 sm:px-6 py-3 sm:py-4 border-b">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0 brand-icon">
               <Compass
-                className="w-6 h-6 text-white"
+                className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                 color="#ffffff"
                 stroke="#ffffff"
                 style={{ color: '#ffffff', stroke: '#ffffff' }}
               />
             </div>
-            <div>
-              <h1 className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:via-indigo-300 dark:to-white bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <h1 className="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:via-indigo-300 dark:to-white bg-clip-text text-transparent truncate">
                 ViewFlow
               </h1>
-              <p className="text-[11px] text-blue-600 dark:text-blue-400 font-medium">Real Estate CRM & Viewing Calendar</p>
+              <p className="text-[10px] sm:text-[11px] text-blue-600 dark:text-blue-400 font-medium truncate">Real Estate CRM & Calendar</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Theme Switcher Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl glass-card text-slate-400 hover:text-slate-100 transition-colors cursor-pointer border shadow-sm"
+              className="p-2 sm:p-2.5 rounded-xl glass-card text-slate-400 hover:text-slate-100 transition-colors cursor-pointer border shadow-sm"
               title="Toggle Dark / Light Theme"
             >
               {theme === 'dark' ? (
@@ -67,10 +67,10 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
 
             <button
               onClick={() => setShowModal(true)}
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-blue-600/30 transition-all flex items-center gap-2 cursor-pointer"
+              className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs tracking-wide shadow-lg shadow-blue-600/30 transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer"
               style={{ color: '#ffffff' }}
             >
-              <span style={{ color: '#ffffff' }}>Agent Sign In</span>
+              <span style={{ color: '#ffffff' }}>Sign In</span>
               <ArrowRight className="w-3.5 h-3.5 text-white" />
             </button>
           </div>
@@ -78,14 +78,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-6xl mx-auto px-6 py-16 flex-1 flex flex-col justify-center">
-        <div className="text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-600/10 border border-blue-500/20 text-xs font-semibold text-blue-600 dark:text-blue-400">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Built Specifically for Independent Real Estate Agents & Letting Agencies</span>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex-1 flex flex-col justify-center">
+        <div className="text-center max-w-3xl mx-auto space-y-5 sm:space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-600/10 border border-blue-500/20 text-[11px] sm:text-xs font-semibold text-blue-600 dark:text-blue-400">
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span>Built Specifically for Real Estate Agencies</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-tight">
             Stop losing buyer leads &{' '}
             <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-300 dark:to-purple-300 bg-clip-text text-transparent">
               never miss a property tour

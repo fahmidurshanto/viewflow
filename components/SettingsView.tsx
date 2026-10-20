@@ -196,7 +196,7 @@ export const SettingsView: React.FC = () => {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* 1. Agency & Agent Branding */}
-        <div className="glass-panel p-6 rounded-2xl space-y-4">
+        <div className="glass-panel p-4 sm:p-6 rounded-2xl space-y-4">
           <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800">
             <Building className="w-5 h-5 text-blue-400" />
             <h3 className="font-bold text-base text-white">Agency & Agent Branding</h3>
@@ -436,7 +436,7 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
         </div>
 
         {/* Save button & feedback */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
           {saved ? (
             <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold animate-in fade-in">
               <CheckCircle className="w-4 h-4" />
@@ -444,7 +444,7 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
             </div>
           ) : (
             <span className="text-xs text-slate-500 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               100% Free Notification Engine active.
             </span>
           )}
@@ -452,7 +452,7 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 flex items-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 disabled:opacity-50"
           >
             {saving ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

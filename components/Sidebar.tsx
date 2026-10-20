@@ -8,11 +8,12 @@ import {
   BarChart3, 
   Compass, 
   Settings, 
-  Sun,
-  Moon,
-  Sparkles,
-  LogIn,
-  LogOut
+  Sun, 
+  Moon, 
+  Sparkles, 
+  LogIn, 
+  LogOut,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -22,6 +23,8 @@ interface SidebarProps {
   theme: 'dark' | 'light';
   toggleTheme: () => void;
   onOpenAuth: () => void;
+  isOpenMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -29,7 +32,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab, 
   theme, 
   toggleTheme,
-  onOpenAuth
+  onOpenAuth,
+  isOpenMobile,
+  onCloseMobile
 }) => {
   const { user, logout } = useAuth();
   const navItems = [
@@ -42,22 +47,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-64 glass-panel border-r border-slate-800 flex flex-col justify-between shrink-0 h-screen sticky top-0 transition-colors">
-      <div>
-        {/* Brand */}
-        <div className="p-6 flex items-center justify-between border-b border-slate-800/60">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0">
-              <Compass className="w-6 h-6" style={{ color: '#ffffff' }} />
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpenMobile && (
+        <div 
+          onClick={onCloseMobile}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300" 
+        />
+      )}
+
+      {/* Sidebar Container: Fixed drawer on mobile, static on desktop */}
+      <aside 
+        className={`fixed inset-y-0 left-0 z-50 w-72 md:w-64 glass-panel border-r border-slate-800 flex flex-col justify-between shrink-0 h-screen transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
+          isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        <div>
+          {/* Brand & Mobile Close Button */}
+          <div className="p-5 md:p-6 flex items-center justify-between border-b border-slate-800/60">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0">
+                <Compass className="w-6 h-6" style={{ color: '#ffffff' }} />
+              </div>
+              <div>
+                <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:via-indigo-300 dark:to-white bg-clip-text text-transparent">
+                  ViewFlow
+                </h1>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Real Estate CRM</p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:via-indigo-300 dark:to-white bg-clip-text text-transparent">
-                ViewFlow
-              </h1>
-              <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Real Estate CRM</p>
-            </div>
+
+            {/* Close button for mobile screen */}
+            {onCloseMobile && (
+              <button
+                type="button"
+                onClick={onCloseMobile}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden transition-colors"
+                title="Close Menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
-        </div>
 
         {/* Navigation */}
         <nav className="p-4 space-y-1.5">
@@ -70,7 +101,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  if (onCloseMobile) onCloseMobile();
+                }}
                 style={isActive ? { color: '#ffffff', backgroundColor: '#2563eb' } : undefined}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-150 cursor-pointer ${
                   isActive
@@ -174,5 +208,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
     </aside>
+    </>
   );
 };

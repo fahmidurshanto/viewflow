@@ -23,6 +23,12 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { Property } from '@/types';
 
+const DEFAULT_BUSINESS_SLOTS = [
+  '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+  '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM',
+  '05:00 PM', '06:00 PM'
+];
+
 function PublicBookingContent() {
   const params = useParams();
   const router = useRouter();
@@ -40,7 +46,9 @@ function PublicBookingContent() {
   });
   const [selectedSlot, setSelectedSlot] = useState<string>('10:00 AM');
   const [selectedDuration, setSelectedDuration] = useState<number>(45);
-  const [slots, setSlots] = useState<Array<{ time: string; available: boolean }>>([]);
+  const [slots, setSlots] = useState<Array<{ time: string; available: boolean }>>(() =>
+    DEFAULT_BUSINESS_SLOTS.map((t) => ({ time: t, available: true }))
+  );
   const [loadingSlots, setLoadingSlots] = useState<boolean>(false);
 
   const [clientName, setClientName] = useState<string>('');
@@ -80,11 +88,14 @@ function PublicBookingContent() {
       setLoadingSlots(true);
       try {
         const res = await api.getViewingAvailability(propertyId, selectedDate);
-        if (res.slots) {
+        if (res.slots && Array.isArray(res.slots) && res.slots.length > 0) {
           setSlots(res.slots);
-          const firstAvailable = res.slots.find((s: any) => s.available);
-          if (firstAvailable) {
-            setSelectedSlot(firstAvailable.time);
+          const currentValid = res.slots.find((s: any) => s.time === selectedSlot && s.available);
+          if (!currentValid) {
+            const firstAvailable = res.slots.find((s: any) => s.available);
+            if (firstAvailable) {
+              setSelectedSlot(firstAvailable.time);
+            }
           }
         }
       } catch (err) {
@@ -168,26 +179,28 @@ function PublicBookingContent() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-blue-600 selection:text-white">
       {/* Header Branding */}
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-600/30">
-              <Building2 className="w-5 h-5 text-white" />
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-3 sm:py-3.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-md shadow-blue-600/30 shrink-0">
+              <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent">
+            <div className="min-w-0">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent truncate block">
                 ViewFlow
               </span>
-              <span className="text-[10px] text-slate-400 block font-medium">Viewing Reservation Portal</span>
+              <span className="text-[9px] sm:text-[10px] text-slate-400 block font-medium truncate">Viewing Reservation Portal</span>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-            <ShieldCheck className="w-4 h-4" /> Verified Private Listing
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-emerald-400 bg-emerald-500/10 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-emerald-500/20 shrink-0">
+            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+            <span className="hidden sm:inline">Verified Private Listing</span>
+            <span className="sm:hidden">Verified</span>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8 w-full flex-1">
+      <main className="max-w-5xl mx-auto px-3.5 sm:px-4 py-4 sm:py-8 w-full flex-1">
         {bookingSuccess ? (
           <div className="max-w-xl mx-auto bg-slate-900/80 border border-emerald-500/30 rounded-3xl p-8 text-center shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-300">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto mb-4 text-emerald-400">
@@ -261,10 +274,10 @@ Could you please confirm the appointment? Looking forward to meeting you!`
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Left Column: Property Preview Card */}
-            <div className="lg:col-span-5 bg-slate-900/60 border border-slate-800 rounded-3xl overflow-hidden shadow-xl sticky top-20">
-              <div className="relative h-56 w-full bg-slate-800">
+            <div className="lg:col-span-5 bg-slate-900/60 border border-slate-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl lg:sticky lg:top-20">
+              <div className="relative h-48 sm:h-56 w-full bg-slate-800">
                 <img
                   src={property.images?.[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'}
                   alt={property.title}
@@ -280,10 +293,10 @@ Could you please confirm the appointment? Looking forward to meeting you!`
                 </div>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <div className="flex items-baseline justify-between mb-1">
-                    <span className="text-2xl font-black text-white">
+                    <span className="text-xl sm:text-2xl font-black text-white">
                       ${property.price?.toLocaleString()}
                       {property.type === 'Rent' && <span className="text-xs font-normal text-slate-400">/mo</span>}
                     </span>
@@ -291,24 +304,24 @@ Could you please confirm the appointment? Looking forward to meeting you!`
                       {property.propertyType}
                     </span>
                   </div>
-                  <h1 className="text-xl font-bold text-white">{property.title}</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-white">{property.title}</h1>
                   <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
                     <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                     {property.address?.street}, {property.address?.city}, {property.address?.state || 'USA'}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 py-3 border-y border-slate-800 text-xs text-slate-300">
-                  <div className="flex items-center gap-1.5">
-                    <Bed className="w-4 h-4 text-slate-500" />
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2 py-3 border-y border-slate-800 text-[11px] sm:text-xs text-slate-300 text-center sm:text-left">
+                  <div className="flex flex-col sm:flex-row items-center sm:gap-1.5">
+                    <Bed className="w-4 h-4 text-slate-500 shrink-0 mb-0.5 sm:mb-0" />
                     <span>{property.specs?.bedrooms || 0} Beds</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Bath className="w-4 h-4 text-slate-500" />
+                  <div className="flex flex-col sm:flex-row items-center sm:gap-1.5">
+                    <Bath className="w-4 h-4 text-slate-500 shrink-0 mb-0.5 sm:mb-0" />
                     <span>{property.specs?.bathrooms || 0} Baths</span>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <Maximize2 className="w-4 h-4 text-slate-500" />
+                  <div className="flex flex-col sm:flex-row items-center sm:gap-1.5">
+                    <Maximize2 className="w-4 h-4 text-slate-500 shrink-0 mb-0.5 sm:mb-0" />
                     <span>{property.specs?.areaSqFt || 0} sqft</span>
                   </div>
                 </div>
@@ -321,9 +334,9 @@ Could you please confirm the appointment? Looking forward to meeting you!`
 
                 {/* Additional Photos Mini Preview */}
                 {property.images && property.images.length > 1 && (
-                  <div className="flex gap-2 overflow-x-auto pt-1 pb-2">
+                  <div className="flex gap-2 overflow-x-auto pt-1 pb-2 scrollbar-none">
                     {property.images.map((img, i) => (
-                      <div key={i} className="w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-slate-800">
+                      <div key={i} className="w-14 sm:w-16 h-10 sm:h-12 rounded-lg overflow-hidden shrink-0 border border-slate-800">
                         <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
                       </div>
                     ))}
@@ -333,10 +346,10 @@ Could you please confirm the appointment? Looking forward to meeting you!`
             </div>
 
             {/* Right Column: Interactive Booking Form */}
-            <div className="lg:col-span-7 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl backdrop-blur-md">
+            <div className="lg:col-span-7 bg-slate-900/60 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xl backdrop-blur-md">
               <div className="border-b border-slate-800 pb-4 mb-6">
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-blue-400" />
+                <h2 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                  <CalendarIcon className="w-5 h-5 text-blue-400 shrink-0" />
                   Select Date & Time Slot
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
@@ -400,14 +413,14 @@ Could you please confirm the appointment? Looking forward to meeting you!`
                       <span>Checking slot availability...</span>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-2.5">
                       {slots.map((s) => (
                         <button
                           key={s.time}
                           type="button"
                           disabled={!s.available}
                           onClick={() => setSelectedSlot(s.time)}
-                          className={`py-2 px-2.5 rounded-xl text-xs font-medium transition-all text-center border ${
+                          className={`py-2 px-2 rounded-xl text-xs font-medium transition-all text-center border ${
                             !s.available
                               ? 'bg-slate-900/40 text-slate-600 border-slate-800/60 line-through cursor-not-allowed'
                               : selectedSlot === s.time
