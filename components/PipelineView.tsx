@@ -20,6 +20,7 @@ import {
   Send,
   UserCheck
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Lead } from '@/types';
 
 interface PipelineViewProps {
@@ -98,9 +99,11 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
   const handleStageMove = async (leadId: string, newStage: string) => {
     try {
       await api.updateLeadStage(leadId, newStage);
+      toast.success(`Lead moved to "${newStage}" stage`);
       onRefresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to update lead stage');
     }
   };
 
@@ -142,10 +145,12 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
         author: 'Lead Agent'
       });
       setNewNote('');
+      toast.success('Activity note logged!');
       const data = await api.getLeadDetails(selectedLead._id);
       setLeadActivities(data.activities || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to add activity note');
     }
   };
 
@@ -164,9 +169,11 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
         stage: 'Enquiry',
         source: 'Website'
       });
+      toast.success('New lead created successfully!');
       onRefresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to create lead');
     }
   };
 

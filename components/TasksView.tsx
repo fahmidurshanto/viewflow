@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Plus, Check, Clock, AlertCircle, Calendar, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Task } from '@/types';
 
 interface TasksViewProps {
@@ -20,9 +21,11 @@ export const TasksView: React.FC<TasksViewProps> = ({ tasks, onRefresh, api }) =
     try {
       const newStatus = task.status === 'Completed' ? 'Pending' : 'Completed';
       await api.updateTask(task._id, { status: newStatus });
+      toast.success(newStatus === 'Completed' ? 'Task marked as completed!' : 'Task restored to pending');
       onRefresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to update task');
     }
   };
 
@@ -37,9 +40,11 @@ export const TasksView: React.FC<TasksViewProps> = ({ tasks, onRefresh, api }) =
       });
       setTitle('');
       setShowAdd(false);
+      toast.success('Task created successfully!');
       onRefresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to create task');
     }
   };
 

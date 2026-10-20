@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { 
   Building2, 
   CalendarDays, 
@@ -11,22 +10,28 @@ import {
   Settings, 
   Sun,
   Moon,
-  Sparkles
+  Sparkles,
+  LogIn,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   theme: 'dark' | 'light';
   toggleTheme: () => void;
+  onOpenAuth: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   activeTab, 
   setActiveTab, 
   theme, 
-  toggleTheme 
+  toggleTheme,
+  onOpenAuth
 }) => {
+  const { user, logout } = useAuth();
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'properties', label: 'Properties', icon: Building2 },
@@ -119,16 +124,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </p>
         </div>
 
-        <div className="pt-3 border-t border-slate-800/70 flex items-center justify-between px-2">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-xs text-blue-400">
-              JD
+        <div className="pt-3 border-t border-slate-800/70">
+          {user ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5 px-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-bold text-xs text-white shadow-sm shrink-0">
+                  {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+                <div className="text-left overflow-hidden flex-1">
+                  <div className="text-xs font-semibold text-slate-200 truncate">{user.name}</div>
+                  <div className="text-[10px] text-slate-400 truncate">{user.agencyName || user.email}</div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1 px-1">
+                <button
+                  onClick={onOpenAuth}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Switch</span>
+                </button>
+                <button
+                  onClick={async () => {
+                    await logout();
+                    window.location.reload();
+                  }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-medium border border-rose-500/20 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
-            <div className="text-left">
-              <div className="text-xs font-semibold text-slate-200">John Doe</div>
-              <div className="text-[10px] text-slate-500">Sole Agent</div>
+          ) : (
+            <div className="p-1 space-y-2">
+              <div className="text-[11px] text-slate-400 text-center">
+                Operating in Demo Mode
+              </div>
+              <button
+                onClick={onOpenAuth}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-600/30 transition-all cursor-pointer"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Agent Sign In / Register</span>
+              </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </aside>

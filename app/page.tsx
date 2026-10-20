@@ -8,14 +8,19 @@ import { PipelineView } from '@/components/PipelineView';
 import { CalendarView } from '@/components/CalendarView';
 import { TasksView } from '@/components/TasksView';
 import { SettingsView } from '@/components/SettingsView';
+import { AuthModal } from '@/components/AuthModal';
+import { LandingView } from '@/components/LandingView';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { Property, Lead, Viewing, Task, DashboardMetrics } from '@/types';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [loading, setLoading] = useState<boolean>(true);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
   const { theme, toggleTheme } = useTheme();
+  const { user, loading: authLoading } = useAuth();
 
   // App Global State
   const [analytics, setAnalytics] = useState<DashboardMetrics | null>(null);
@@ -58,8 +63,24 @@ function MainApp() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+  // Loading Session Gate
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Strictly protected: show Landing/Sign In page if unauthenticated
+  if (!user) {
+    return <LandingView onLoginSuccess={() => fetchData()} />;
+  }
 
   return (
     <div className="flex min-h-screen font-sans selection:bg-blue-600 selection:text-white transition-colors duration-200">
@@ -69,6 +90,7 @@ function MainApp() {
         setActiveTab={setActiveTab} 
         theme={theme}
         toggleTheme={toggleTheme}
+        onOpenAuth={() => setShowAuthModal(true)}
       />
 
       {/* Main Content Area */}
@@ -123,6 +145,13 @@ function MainApp() {
           </>
         )}
       </main>
+
+      {/* Sign In & Agency Registration Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => fetchData()}
+      />
     </div>
   );
 }
@@ -130,7 +159,9 @@ function MainApp() {
 export default function Home() {
   return (
     <ThemeProvider>
-      <MainApp />
+      <AuthProvider>
+        <MainApp />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

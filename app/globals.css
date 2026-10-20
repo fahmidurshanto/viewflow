@@ -74,8 +74,18 @@ body {
 html.light .viewflow-root,
 [data-theme="light"] {
   /* General Typography */
-  h1, h2, h3, h4, h5, h6 {
+  h1:not(.brand-title):not(.force-white), 
+  h2, h3, h4, h5, h6 {
     color: #0f172a !important;
+  }
+
+  .brand-title,
+  .force-white,
+  .brand-icon,
+  .brand-icon svg,
+  .brand-icon path {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
   }
 
   p {
@@ -102,7 +112,7 @@ html.light .viewflow-root,
     color: #0f172a !important;
   }
 
-  /* CRITICAL: Active tabs and filled buttons MUST have crisp white text */
+  /* CRITICAL: Active tabs, filled buttons, and status/type badges MUST have crisp white text */
   .active-nav-tab,
   .active-nav-tab *,
   aside nav button.active-nav-tab,
@@ -110,10 +120,26 @@ html.light .viewflow-root,
   aside nav button.active-nav-tab svg,
   .bg-blue-600,
   .bg-blue-600 *,
+  .bg-blue-600\/90,
+  .bg-blue-600\/90 *,
   .bg-emerald-600,
   .bg-emerald-600 *,
+  .bg-emerald-500,
+  .bg-emerald-500 *,
+  .bg-emerald-500\/90,
+  .bg-emerald-500\/90 *,
+  .bg-amber-500,
+  .bg-amber-500 *,
+  .bg-amber-500\/90,
+  .bg-amber-500\/90 *,
   .bg-rose-600,
   .bg-rose-600 *,
+  .bg-rose-500,
+  .bg-rose-500 *,
+  .bg-rose-500\/90,
+  .bg-rose-500\/90 *,
+  .bg-indigo-600,
+  .bg-indigo-600 *,
   button.bg-blue-600,
   button.bg-blue-600 span,
   button.bg-blue-600 svg {

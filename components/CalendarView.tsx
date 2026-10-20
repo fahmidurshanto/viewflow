@@ -11,8 +11,11 @@ import {
   Check, 
   X, 
   Star,
-  CheckCircle2
+  CheckCircle2,
+  MessageCircle,
+  Mail
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Viewing, Property, Lead } from '@/types';
 
 interface CalendarViewProps {
@@ -36,9 +39,37 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   // Form State
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>(properties[0]?._id || '');
   const [selectedLeadId, setSelectedLeadId] = useState<string>(leads[0]?._id || '');
-  const [dateStr, setDateStr] = useState<string>('');
+  const [dateStr, setDateStr] = useState<string>(() => new Date().toISOString().split('T')[0]);
   const [timeStr, setTimeStr] = useState<string>('11:00');
   const [durationMinutes, setDurationMinutes] = useState<number>(45);
+  const [occupiedSlots, setOccupiedSlots] = useState<Array<{ start: string; end: string; timeString: string; durationMinutes: number }>>([]);
+  const [checkingAvailability, setCheckingAvailability] = useState<boolean>(false);
+
+  // Check occupied slots when selected property or date changes
+  React.useEffect(() => {
+    if (!selectedPropertyId || !dateStr) {
+      setOccupiedSlots([]);
+      return;
+    }
+    let isCancelled = false;
+    const fetchOccupied = async () => {
+      setCheckingAvailability(true);
+      try {
+        const res = await api.getViewingAvailability(selectedPropertyId, dateStr);
+        if (!isCancelled && res.occupiedSlots) {
+          setOccupiedSlots(res.occupiedSlots);
+        }
+      } catch (err) {
+        console.error('Failed to load slots availability', err);
+      } finally {
+        if (!isCancelled) setCheckingAvailability(false);
+      }
+    };
+    fetchOccupied();
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedPropertyId, dateStr]);
 
   const handleBookViewing = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,22 +87,27 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       if (res.error) {
         setConflictError(res.message || res.error);
+        toast.error(res.message || res.error || 'Scheduling conflict detected');
         return;
       }
 
       setShowBookModal(false);
+      toast.success('Viewing scheduled successfully!');
       onRefresh();
     } catch (err: any) {
       setConflictError(err.message || 'Failed to book viewing');
+      toast.error(err.message || 'Failed to book viewing');
     }
   };
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
       await api.updateViewingStatus(id, status);
+      toast.success(`Viewing status updated to ${status}`);
       onRefresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(err.message || 'Failed to update viewing status');
     }
   };
 
@@ -120,6 +156,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               viewings.map((v) => {
                 const date = new Date(v.scheduledDate);
                 const isPast = date < new Date();
+                const addr = v.property?.address;
+                const formattedLocation = typeof addr === 'string'
+                  ? addr
+                  : addr
+                  ? [addr.street, addr.city, addr.state, addr.zipCode].filter(Boolean).join(', ')
+                  : 'Address provided upon request';
+
                 return (
                   <div
                     key={v._id}
@@ -152,8 +195,19 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         <div className="text-xs text-slate-400 flex flex-wrap items-center gap-x-3 gap-y-1">
                           <span className="flex items-center gap-1 text-slate-300">
                             <User className="w-3.5 h-3.5 text-slate-500" />
-                            {v.lead?.name || 'Prospect'} ({v.lead?.phone || 'No Phone'})
+                            {v.lead?.name || 'Prospect'}
                           </span>
+                          {v.lead?.phone && (
+                            <span className="text-slate-400">
+                              {v.lead.phone}
+                            </span>
+                          )}
+                          {v.lead?.email && (
+                            <span className="flex items-center gap-1 text-indigo-400">
+                              <Mail className="w-3 h-3 text-indigo-400/80" />
+                              {v.lead.email}
+                            </span>
+                          )}
                           <span className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 text-slate-500" />
                             {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({v.durationMinutes} min)
@@ -162,20 +216,63 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       </div>
                     </div>
 
-                    {/* Quick status actions */}
-                    <div className="flex items-center gap-2 self-end md:self-center">
+                    {/* Quick status, Email & WhatsApp actions */}
+                    <div className="flex items-center gap-2 self-end md:self-center flex-wrap">
+                      {v.lead?.email && (
+                        <a
+                          href={`mailto:${v.lead.email}?subject=${encodeURIComponent(
+                            `Viewing Appointment: ${v.property?.title || 'Property Tour'} - ViewFlow`
+                          )}&body=${encodeURIComponent(
+`Hi ${v.lead.name || 'there'},
+
+This is regarding your scheduled viewing for "${v.property?.title || 'the property'}" on ${date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+
+Location: ${formattedLocation}
+
+Please let me know if you need any directions, need to reschedule, or have questions prior to our visit!
+
+Best regards,
+Your Real Estate Agent`
+                          )}`}
+                          className="px-2.5 py-1.5 rounded-lg bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                          title={`Send pre-filled email to ${v.lead.email}`}
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Email</span>
+                        </a>
+                      )}
+
+                      {v.lead?.phone && (
+                        <a
+                          href={`https://wa.me/${v.lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+`Hi ${v.lead.name}! This is regarding your viewing appointment for "${v.property?.title || 'the property'}" scheduled for ${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+
+Location: ${formattedLocation}
+
+Please let me know if you need any directions or have questions prior to our visit!`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                          title="Message customer directly on WhatsApp"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+                      )}
+
                       {v.status === 'Scheduled' && (
                         <>
                           <button
                             onClick={() => handleStatusChange(v._id, 'Completed')}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all"
+                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
                           >
                             <Check className="w-3.5 h-3.5" />
                             Mark Done
                           </button>
                           <button
                             onClick={() => handleStatusChange(v._id, 'Cancelled')}
-                            className="px-2.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white text-xs font-semibold transition-all"
+                            className="px-2.5 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white text-xs font-semibold transition-all cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -310,6 +407,46 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Duration</label>
+                <select
+                  value={durationMinutes}
+                  onChange={(e) => setDurationMinutes(Number(e.target.value))}
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                >
+                  <option value={30}>30 Minutes</option>
+                  <option value={45}>45 Minutes (Standard)</option>
+                  <option value={60}>60 Minutes</option>
+                  <option value={90}>90 Minutes (Deep Tour)</option>
+                </select>
+              </div>
+
+              {/* Real-time Occupied Slots Indicator */}
+              <div className="rounded-xl bg-slate-800/50 border border-slate-700/60 p-3 space-y-1.5">
+                <div className="text-[11px] font-semibold text-slate-300 flex items-center justify-between">
+                  <span>Existing Bookings on {dateStr || 'Selected Date'}:</span>
+                  {checkingAvailability && (
+                    <span className="text-blue-400 text-[10px] animate-pulse">Checking slots...</span>
+                  )}
+                </div>
+                {occupiedSlots.length === 0 ? (
+                  <div className="text-[11px] text-emerald-400 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> All day open for this property
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {occupiedSlots.map((slot, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium"
+                      >
+                        Booked: {slot.timeString} ({slot.durationMinutes}m)
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
