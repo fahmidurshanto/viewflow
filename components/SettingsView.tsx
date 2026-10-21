@@ -633,13 +633,14 @@ If you need to reschedule or have any questions ahead of time, please reply dire
                   <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Mobile View</span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                  <div className="max-w-[85%] ml-auto bg-emerald-950/70 border border-emerald-700/40 p-3 rounded-2xl rounded-tr-sm text-emerald-100 text-xs shadow-md space-y-1">
-                    <p className="whitespace-pre-line leading-relaxed text-[12px]">
+                <div className="whatsapp-preview-container p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                  <div className="whatsapp-preview-bubble max-w-[88%] ml-auto bg-emerald-950/90 border border-emerald-700/50 p-3.5 rounded-2xl rounded-tr-sm shadow-lg space-y-1.5">
+                    <p className="whatsapp-preview-text whitespace-pre-line leading-relaxed text-[12px] text-white font-sans" style={{ color: '#ffffff' }}>
                       {renderPreview(config.whatsappReminderBody)}
                     </p>
-                    <div className="text-[9px] text-emerald-400/70 text-right mt-1">
-                      10:00 AM ✓✓
+                    <div className="whatsapp-preview-time text-[10px] text-emerald-300 font-mono text-right flex items-center justify-end gap-1 mt-1" style={{ color: '#6ee7b7' }}>
+                      <span>10:00 AM</span>
+                      <span className="text-emerald-400 font-bold">✓✓</span>
                     </div>
                   </div>
                 </div>

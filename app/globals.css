@@ -261,6 +261,38 @@ html.light .viewflow-root,
     color: #ffffff !important;
     stroke: #ffffff !important;
   }
+
+  /* WhatsApp Mockup Preview: strictly preserve dark theme & crisp white text in Light Mode */
+  .whatsapp-preview-container,
+  div.whatsapp-preview-container {
+    background-color: #020617 !important;
+    border-color: #1e293b !important;
+  }
+
+  .whatsapp-preview-bubble,
+  div.whatsapp-preview-bubble {
+    background-color: rgba(6, 78, 59, 0.95) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+  }
+
+  .whatsapp-preview-bubble *,
+  .whatsapp-preview-bubble p,
+  .whatsapp-preview-text {
+    color: #ffffff !important;
+  }
+
+  .whatsapp-preview-time,
+  .whatsapp-preview-time * {
+    color: #6ee7b7 !important;
+  }
+}
+
+/* Base WhatsApp Preview styling */
+.whatsapp-preview-bubble p {
+  color: #ffffff !important;
+}
+.whatsapp-preview-time {
+  color: #6ee7b7 !important;
 }
 
 /* Custom scrollbars */
