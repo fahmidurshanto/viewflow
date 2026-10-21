@@ -253,6 +253,14 @@ html.light .viewflow-root,
     color: #64748b !important;
     stroke: #64748b !important;
   }
+
+  /* Notification Bell Button Hover in Light Mode */
+  .notification-bell-btn:hover,
+  .notification-bell-btn:hover svg,
+  .notification-bell-btn:hover path {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
 }
 
 /* Custom scrollbars */

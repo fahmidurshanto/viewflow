@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Plus, 
-  User, 
-  MapPin, 
-  AlertTriangle, 
-  Check, 
-  X, 
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  Plus,
+  User,
+  MapPin,
+  AlertTriangle,
+  Check,
+  X,
   Star,
   CheckCircle2,
   MessageCircle,
@@ -160,8 +160,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 const formattedLocation = typeof addr === 'string'
                   ? addr
                   : addr
-                  ? [addr.street, addr.city, addr.state, addr.zipCode].filter(Boolean).join(', ')
-                  : 'Address provided upon request';
+                    ? [addr.street, addr.city, addr.state, addr.zipCode].filter(Boolean).join(', ')
+                    : 'Address provided upon request';
 
                 return (
                   <div
@@ -170,25 +170,27 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   >
                     <div className="flex items-start gap-3.5">
                       {/* Date Badge */}
-                      <div className="p-2.5 rounded-xl bg-blue-600/10 border border-blue-500/20 text-center shrink-0 min-w-[58px]">
-                        <div className="text-[10px] font-bold uppercase text-blue-400">
+                      <div className="p-2 px-2.5 rounded-xl bg-blue-600/10 border border-blue-500/20 text-center shrink-0 min-w-[62px]">
+                        <div className="text-[10px] font-bold uppercase text-blue-500 tracking-wider">
                           {date.toLocaleDateString([], { month: 'short' })}
                         </div>
-                        <div className="text-lg font-black text-white leading-tight">
+                        <div className="text-lg font-black text-black dark:text-white leading-none my-0.5">
                           {date.getDate()}
+                        </div>
+                        <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                          {date.getFullYear()}
                         </div>
                       </div>
 
                       <div className="space-y-1">
                         <div className="font-semibold text-sm text-slate-100 flex items-center gap-2">
                           {v.property?.title || 'Property Tour'}
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                            v.status === 'Completed'
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${v.status === 'Completed'
                               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                               : v.status === 'Cancelled'
-                              ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                              : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                          }`}>
+                                ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                                : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            }`}>
                             {v.status}
                           </span>
                         </div>
@@ -223,7 +225,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           href={`mailto:${v.lead.email}?subject=${encodeURIComponent(
                             `Viewing Appointment: ${v.property?.title || 'Property Tour'} - ViewFlow`
                           )}&body=${encodeURIComponent(
-`Hi ${v.lead.name || 'there'},
+                            `Hi ${v.lead.name || 'there'},
 
 This is regarding your scheduled viewing for "${v.property?.title || 'the property'}" on ${date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
 
@@ -245,7 +247,7 @@ Your Real Estate Agent`
                       {v.lead?.phone && (
                         <a
                           href={`https://wa.me/${v.lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-`Hi ${v.lead.name}! This is regarding your viewing appointment for "${v.property?.title || 'the property'}" scheduled for ${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+                            `Hi ${v.lead.name}! This is regarding your viewing appointment for "${v.property?.title || 'the property'}" scheduled for ${date.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
 
 Location: ${formattedLocation}
 

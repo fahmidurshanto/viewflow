@@ -96,10 +96,10 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
           }
         }}
         type="button"
-        className="relative p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all cursor-pointer focus:outline-none"
+        className="relative p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white hover:bg-slate-800/80 dark:hover:bg-slate-800/80 transition-all cursor-pointer focus:outline-none notification-bell-btn group"
         title="View Notifications"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-5 h-5 text-slate-500 dark:text-slate-300 group-hover:text-white transition-colors" />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] font-extrabold text-white shadow-lg shadow-blue-500/50 animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
