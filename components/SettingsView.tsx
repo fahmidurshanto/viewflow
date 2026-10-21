@@ -25,7 +25,7 @@ export const SettingsView: React.FC = () => {
   const [saved, setSaved] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
 
-  // User-facing business preferences (Zero technical tokens)
+  // User-facing business preferences
   const [config, setConfig] = useState({
     agencyName: 'ViewFlow Premier Real Estate',
     agentEmail: '',
@@ -35,8 +35,25 @@ export const SettingsView: React.FC = () => {
     enableEmailReminder: true,
     enableWhatsAppReminder: true,
     reminderHoursBefore: 2,
-    autoPromoteLeadOnBooking: true
+    autoPromoteLeadOnBooking: true,
+    emailReminderSubject: 'Reminder: Upcoming Viewing for {propertyTitle} at {viewingTime}',
+    emailReminderBody: `Dear {clientName},
+
+This is a friendly reminder that your private property viewing is scheduled for today.
+
+Viewing Details:
+• Property: {propertyTitle}
+• Date: {viewingDate}
+• Time: {viewingTime} ({duration})
+• Location: {location}
+
+If you need to reschedule or have any questions ahead of time, please reply directly to this email or call {agentPhone}.
+
+{emailSignature}`,
+    whatsappReminderBody: 'Hi {clientName}! Friendly reminder from {agencyName}: your property viewing for "{propertyTitle}" is today at {viewingTime}. Location: {location}. See you there!'
   });
+
+  const [activeTemplateTab, setActiveTemplateTab] = useState<'email' | 'whatsapp'>('email');
 
   // Test states
   const [testEmailAddress, setTestEmailAddress] = useState<string>('');
@@ -45,6 +62,60 @@ export const SettingsView: React.FC = () => {
   const [testingWhatsApp, setTestingWhatsApp] = useState<boolean>(false);
   const [emailTestResult, setEmailTestResult] = useState<{ success: boolean; message: string } | null>(null);
   const [whatsAppTestResult, setWhatsAppTestResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  // Available Placeholders
+  const placeholders = [
+    { token: '{clientName}', label: 'Client Name', sample: 'Sarah Jenkins' },
+    { token: '{propertyTitle}', label: 'Property Title', sample: 'Modern Waterfront Luxury Villa' },
+    { token: '{viewingDate}', label: 'Viewing Date', sample: 'Tomorrow (Wed, Oct 22)' },
+    { token: '{viewingTime}', label: 'Viewing Time', sample: '10:00 AM' },
+    { token: '{duration}', label: 'Duration', sample: '45 mins' },
+    { token: '{location}', label: 'Address / City', sample: '124 Marina Blvd, Miami, FL' },
+    { token: '{agencyName}', label: 'Agency Name', sample: config.agencyName || 'ViewFlow Premier Real Estate' },
+    { token: '{agentPhone}', label: 'Agent Phone', sample: config.agentPhone || '+1 (555) 019-2834' },
+    { token: '{emailSignature}', label: 'Email Signature', sample: config.emailSignature || 'Best regards,\nViewFlow Team' }
+  ];
+
+  // Helper to render live preview string
+  const renderPreview = (text: string) => {
+    let result = text || '';
+    placeholders.forEach((p) => {
+      result = result.replaceAll(p.token, p.sample);
+    });
+    return result;
+  };
+
+  // Helper to insert placeholder at cursor or append
+  const insertPlaceholder = (token: string, field: 'emailReminderSubject' | 'emailReminderBody' | 'whatsappReminderBody') => {
+    setConfig((prev) => ({
+      ...prev,
+      [field]: prev[field] ? `${prev[field]} ${token}` : token
+    }));
+    toast.info(`Inserted placeholder: ${token}`);
+  };
+
+  // Reset templates to defaults
+  const handleResetTemplateDefaults = () => {
+    setConfig((prev) => ({
+      ...prev,
+      emailReminderSubject: 'Reminder: Upcoming Viewing for {propertyTitle} at {viewingTime}',
+      emailReminderBody: `Dear {clientName},
+
+This is a friendly reminder that your private property viewing is scheduled for today.
+
+Viewing Details:
+• Property: {propertyTitle}
+• Date: {viewingDate}
+• Time: {viewingTime} ({duration})
+• Location: {location}
+
+If you need to reschedule or have any questions ahead of time, please reply directly to this email or call {agentPhone}.
+
+{emailSignature}`,
+      whatsappReminderBody: 'Hi {clientName}! Friendly reminder from {agencyName}: your property viewing for "{propertyTitle}" is today at {viewingTime}. Location: {location}. See you there!'
+    }));
+    toast.success('Reset reminder templates to defaults!');
+  };
 
   // Load existing settings on mount
   useEffect(() => {
@@ -62,7 +133,22 @@ export const SettingsView: React.FC = () => {
             enableEmailReminder: data.enableEmailReminder !== false,
             enableWhatsAppReminder: data.enableWhatsAppReminder !== false,
             reminderHoursBefore: data.reminderHoursBefore || 2,
-            autoPromoteLeadOnBooking: data.autoPromoteLeadOnBooking !== false
+            autoPromoteLeadOnBooking: data.autoPromoteLeadOnBooking !== false,
+            emailReminderSubject: data.emailReminderSubject || 'Reminder: Upcoming Viewing for {propertyTitle} at {viewingTime}',
+            emailReminderBody: data.emailReminderBody || `Dear {clientName},
+
+This is a friendly reminder that your private property viewing is scheduled for today.
+
+Viewing Details:
+• Property: {propertyTitle}
+• Date: {viewingDate}
+• Time: {viewingTime} ({duration})
+• Location: {location}
+
+If you need to reschedule or have any questions ahead of time, please reply directly to this email or call {agentPhone}.
+
+{emailSignature}`,
+            whatsappReminderBody: data.whatsappReminderBody || 'Hi {clientName}! Friendly reminder from {agencyName}: your property viewing for "{propertyTitle}" is today at {viewingTime}. Location: {location}. See you there!'
           });
           setTestEmailAddress(data.agentEmail || '');
           setTestPhoneNumber(data.agentPhone || '');
@@ -355,6 +441,211 @@ export const SettingsView: React.FC = () => {
               <option value={24}>24 hours before viewing</option>
             </select>
           </div>
+        </div>
+
+        {/* 3. Custom Reminder Templates (Email & WhatsApp with Placeholders) */}
+        <div className="glass-panel p-6 rounded-2xl space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-amber-400" />
+              <div>
+                <h3 className="font-bold text-base text-white">Custom Reminder Templates</h3>
+                <p className="text-xs text-slate-400">Personalize pre-viewing notifications with dynamic client & property placeholders</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleResetTemplateDefaults}
+                className="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 transition-colors flex items-center gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                Reset Defaults
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Selector */}
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+            <button
+              type="button"
+              onClick={() => setActiveTemplateTab('email')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTemplateTab === 'email'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <Mail className="w-3.5 h-3.5" />
+              Email Template
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTemplateTab('whatsapp')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTemplateTab === 'whatsapp'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              WhatsApp Template
+            </button>
+          </div>
+
+          {/* Clickable Dynamic Placeholder Chips */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-400">
+                Click any placeholder to insert into {activeTemplateTab === 'email' ? 'email body' : 'message'}:
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {placeholders.map((p) => (
+                <button
+                  key={p.token}
+                  type="button"
+                  onClick={() =>
+                    insertPlaceholder(
+                      p.token,
+                      activeTemplateTab === 'email' ? 'emailReminderBody' : 'whatsappReminderBody'
+                    )
+                  }
+                  className="px-2.5 py-1 rounded-lg text-[11px] font-mono bg-slate-800/80 hover:bg-blue-600/20 hover:border-blue-500/40 border border-slate-700 text-slate-300 hover:text-blue-300 transition-all flex items-center gap-1 cursor-pointer"
+                  title={`Sample: ${p.sample}`}
+                >
+                  <span className="text-blue-400 font-bold">+</span>
+                  {p.token}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Content: Email Template */}
+          {activeTemplateTab === 'email' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-medium text-slate-300">Email Subject Line</label>
+                    <button
+                      type="button"
+                      onClick={() => insertPlaceholder('{propertyTitle}', 'emailReminderSubject')}
+                      className="text-[10px] text-blue-400 hover:underline cursor-pointer"
+                    >
+                      + Insert Property Title
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    value={config.emailReminderSubject}
+                    onChange={(e) => setConfig({ ...config, emailReminderSubject: e.target.value })}
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+                    placeholder="e.g. Reminder: Property Viewing for {propertyTitle} at {viewingTime}"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    Email Message Body (Plain text or markdown spacing)
+                  </label>
+                  <textarea
+                    rows={10}
+                    value={config.emailReminderBody}
+                    onChange={(e) => setConfig({ ...config, emailReminderBody: e.target.value })}
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono leading-relaxed focus:outline-none focus:border-blue-500"
+                    placeholder="Type your message with {clientName}, {propertyTitle}, etc."
+                  />
+                </div>
+              </div>
+
+              {/* Real-time Email Preview Card */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-blue-400" />
+                    Live Preview (Rendered Client View)
+                  </span>
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Simulated Data</span>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3 shadow-inner">
+                  <div className="border-b border-slate-800 pb-2">
+                    <div className="text-[11px] text-slate-400">Subject:</div>
+                    <div className="text-xs font-semibold text-white mt-0.5">
+                      {renderPreview(config.emailReminderSubject)}
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white text-slate-800 text-xs shadow-sm space-y-3 font-sans">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <span className="font-bold text-blue-600 text-[11px]">
+                        {config.agencyName || 'ViewFlow Premier Real Estate'}
+                      </span>
+                      <span className="px-2 py-0.5 rounded text-[9px] font-semibold bg-blue-50 text-blue-600">
+                        Viewing Reminder
+                      </span>
+                    </div>
+
+                    <div className="whitespace-pre-line leading-relaxed text-slate-700 text-xs">
+                      {renderPreview(config.emailReminderBody)}
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] space-y-1">
+                      <div className="text-slate-900 font-semibold">Scheduled Appointment:</div>
+                      <div className="text-slate-600">Tomorrow (Wed, Oct 22) at 10:00 AM (45 mins)</div>
+                      <div className="text-slate-500 text-[10px]">124 Marina Blvd, Miami, FL</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab Content: WhatsApp Template */}
+          {activeTemplateTab === 'whatsapp' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1">
+                    WhatsApp Message Text
+                  </label>
+                  <textarea
+                    rows={6}
+                    value={config.whatsappReminderBody}
+                    onChange={(e) => setConfig({ ...config, whatsappReminderBody: e.target.value })}
+                    className="w-full bg-slate-800/90 border border-slate-700 rounded-xl p-3 text-xs text-white font-mono leading-relaxed focus:outline-none focus:border-emerald-500"
+                    placeholder="Type your WhatsApp notification template..."
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Tip: WhatsApp messages are most effective when kept under 2-3 sentences.
+                  </p>
+                </div>
+              </div>
+
+              {/* Real-time WhatsApp Preview Card */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                    Live WhatsApp Bubble Preview
+                  </span>
+                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Mobile View</span>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                  <div className="max-w-[85%] ml-auto bg-emerald-950/70 border border-emerald-700/40 p-3 rounded-2xl rounded-tr-sm text-emerald-100 text-xs shadow-md space-y-1">
+                    <p className="whitespace-pre-line leading-relaxed text-[12px]">
+                      {renderPreview(config.whatsappReminderBody)}
+                    </p>
+                    <div className="text-[9px] text-emerald-400/70 text-right mt-1">
+                      10:00 AM ✓✓
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 3. Notification Test Center (No API keys required) */}
