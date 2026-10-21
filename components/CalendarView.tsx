@@ -36,6 +36,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   const [showBookModal, setShowBookModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
 
+  // Post-Viewing Feedback State
+  const [feedbackViewing, setFeedbackViewing] = useState<Viewing | null>(null);
+  const [feedbackRating, setFeedbackRating] = useState<number>(5);
+  const [feedbackComments, setFeedbackComments] = useState<string>('');
+  const [feedbackOfferInterest, setFeedbackOfferInterest] = useState<boolean>(false);
+  const [feedbackAutoAdvance, setFeedbackAutoAdvance] = useState<boolean>(true);
+  const [submittingFeedback, setSubmittingFeedback] = useState<boolean>(false);
+
   // Form State
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>(properties[0]?._id || '');
   const [selectedLeadId, setSelectedLeadId] = useState<string>(leads[0]?._id || '');
@@ -108,6 +116,39 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || 'Failed to update viewing status');
+    }
+  };
+
+  const handleOpenFeedback = (viewing: Viewing) => {
+    setFeedbackViewing(viewing);
+    setFeedbackRating(viewing.feedback?.rating || 5);
+    setFeedbackComments(viewing.feedback?.comments || '');
+    setFeedbackOfferInterest(viewing.feedback?.interestedInOffer || false);
+    setFeedbackAutoAdvance(true);
+  };
+
+  const handleSubmitFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackViewing) return;
+    try {
+      setSubmittingFeedback(true);
+      await api.updateViewingStatus(
+        feedbackViewing._id,
+        'Completed',
+        {
+          rating: feedbackRating,
+          comments: feedbackComments.trim(),
+          interestedInOffer: feedbackOfferInterest
+        },
+        feedbackOfferInterest && feedbackAutoAdvance
+      );
+      toast.success('Viewing marked as completed & feedback logged!');
+      setFeedbackViewing(null);
+      onRefresh();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to submit feedback');
+    } finally {
+      setSubmittingFeedback(false);
     }
   };
 
@@ -263,11 +304,23 @@ Please let me know if you need any directions or have questions prior to our vis
                         </a>
                       )}
 
+                      {v.feedback?.rating && (
+                        <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold">
+                          <Star className="w-3.5 h-3.5 fill-amber-400" />
+                          <span>{v.feedback.rating}/5</span>
+                          {v.feedback.interestedInOffer && (
+                            <span className="ml-1 text-[10px] text-emerald-400 font-bold uppercase">
+                              • Offer Intended
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       {v.status === 'Scheduled' && (
                         <>
                           <button
-                            onClick={() => handleStatusChange(v._id, 'Completed')}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                            onClick={() => handleOpenFeedback(v)}
+                            className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer shadow-sm"
                           >
                             <Check className="w-3.5 h-3.5" />
                             Mark Done
@@ -279,6 +332,15 @@ Please let me know if you need any directions or have questions prior to our vis
                             Cancel
                           </button>
                         </>
+                      )}
+                      {v.status === 'Completed' && !v.feedback?.rating && (
+                        <button
+                          onClick={() => handleOpenFeedback(v)}
+                          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                        >
+                          <Star className="w-3.5 h-3.5 text-amber-400" />
+                          Add Feedback
+                        </button>
                       )}
                     </div>
                   </div>
@@ -455,7 +517,7 @@ Please let me know if you need any directions or have questions prior to our vis
                 <button
                   type="button"
                   onClick={() => setShowBookModal(false)}
-                  className="px-4 py-2 text-sm text-slate-400"
+                  className="px-4 py-2 text-sm text-slate-400 hover:text-white"
                 >
                   Cancel
                 </button>
@@ -464,6 +526,137 @@ Please let me know if you need any directions or have questions prior to our vis
                   className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30"
                 >
                   Confirm Slot
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Post-Viewing Feedback Collection Modal */}
+      {feedbackViewing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-700/80 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                  <Star className="w-5 h-5 fill-amber-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-white">Viewing Feedback</h3>
+                  <p className="text-xs text-slate-400">Log tour impressions & client offer intention</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setFeedbackViewing(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmitFeedback} className="mt-4 space-y-4">
+              {/* Viewing Brief Summary */}
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-1">
+                <div className="text-slate-300 font-semibold truncate">
+                  Property: <span className="text-white">{feedbackViewing.property?.title}</span>
+                </div>
+                <div className="text-slate-400">
+                  Client: <span className="text-blue-400 font-medium">{feedbackViewing.lead?.name}</span> ({feedbackViewing.lead?.email})
+                </div>
+              </div>
+
+              {/* 1-5 Star Rating */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Client Interest Rating (1 to 5)
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFeedbackRating(star)}
+                      className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                        feedbackRating >= star
+                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 scale-105'
+                          : 'bg-slate-800/60 border-slate-700 text-slate-500 hover:text-slate-400'
+                      }`}
+                    >
+                      <Star className={`w-5 h-5 ${feedbackRating >= star ? 'fill-amber-400' : ''}`} />
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-slate-300 ml-2">
+                    {feedbackRating === 5 ? '🤩 Loved it!' :
+                     feedbackRating === 4 ? '😊 Very Interested' :
+                     feedbackRating === 3 ? '😐 Neutral / Thinking' :
+                     feedbackRating === 2 ? '😕 Hesitant' : '❌ Not Interested'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Comments / Notes */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Tour Notes & Impressions
+                </label>
+                <textarea
+                  rows={3}
+                  value={feedbackComments}
+                  onChange={(e) => setFeedbackComments(e.target.value)}
+                  placeholder="e.g. Liked the open kitchen layout, concerned about parking space..."
+                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Offer Intention Toggle */}
+              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-2">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-white">Client intends to make an offer?</span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={feedbackOfferInterest}
+                    onChange={(e) => setFeedbackOfferInterest(e.target.checked)}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-0 bg-slate-800 border-slate-700 cursor-pointer"
+                  />
+                </label>
+
+                {feedbackOfferInterest && (
+                  <div className="pt-2 border-t border-slate-800/60">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-blue-400">
+                      <input
+                        type="checkbox"
+                        checked={feedbackAutoAdvance}
+                        onChange={(e) => setFeedbackAutoAdvance(e.target.checked)}
+                        className="w-3.5 h-3.5 rounded text-blue-600 focus:ring-0 bg-slate-800 border-slate-700 cursor-pointer"
+                      />
+                      <span>Auto-advance lead to <strong>"Offer"</strong> stage in Pipeline</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setFeedbackViewing(null)}
+                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingFeedback}
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {submittingFeedback ? (
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Check className="w-3.5 h-3.5" />
+                  )}
+                  Save & Complete Viewing
                 </button>
               </div>
             </form>

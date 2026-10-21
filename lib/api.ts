@@ -182,10 +182,10 @@ export const api = {
       })
     });
   },
-  updateViewingStatus: async (id: string, status: string, feedback?: any) => {
+  updateViewingStatus: async (id: string, status: string, feedback?: any, autoAdvanceLead?: boolean) => {
     return request(`/viewings/${id}/status`, {
       method: 'PATCH',
-      body: JSON.stringify({ status, feedback })
+      body: JSON.stringify({ status, feedback, autoAdvanceLead })
     });
   },
 
