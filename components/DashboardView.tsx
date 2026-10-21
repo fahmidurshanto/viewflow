@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   Users, 
@@ -10,9 +10,15 @@ import {
   CheckCircle2, 
   ArrowUpRight,
   MapPin,
-  Calendar
+  Calendar,
+  Activity,
+  ArrowRightCircle,
+  CheckCheck,
+  UserPlus,
+  Sparkles
 } from 'lucide-react';
-import { DashboardMetrics } from '@/types';
+import { DashboardMetrics, ActivityLog } from '@/types';
+import { api } from '@/lib/api';
 
 interface DashboardViewProps {
   data: DashboardMetrics | null;
@@ -20,6 +26,25 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ data, onNavigateTab }) => {
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchRecent = async () => {
+      try {
+        setLoadingActivities(true);
+        const res = await api.getActivities({ limit: 6 });
+        if (res && Array.isArray(res.activities)) {
+          setActivities(res.activities);
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard activities', err);
+      } finally {
+        setLoadingActivities(false);
+      }
+    };
+    fetchRecent();
+  }, []);
   const metrics = data?.metrics || {
     totalProperties: 4,
     availableProperties: 2,
@@ -239,6 +264,90 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ data, onNavigateTa
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Live Activity & Notifications Timeline */}
+      <div className="glass-panel p-6 rounded-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <Activity className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-white">Live Activity Feed</h3>
+              <p className="text-xs text-slate-400">Real-time bookings, pipeline movements, and client interactions</p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigateTab('pipeline')}
+            className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 cursor-pointer"
+          >
+            Open Pipeline
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {loadingActivities ? (
+          <div className="py-12 text-center text-xs text-slate-400">
+            Loading recent activities...
+          </div>
+        ) : activities.length === 0 ? (
+          <div className="p-8 text-center rounded-xl bg-slate-900/40 border border-slate-800/60 text-slate-400 text-xs flex flex-col items-center gap-2">
+            <Sparkles className="w-6 h-6 text-slate-500" />
+            <span>No activity recorded yet. New bookings and lead events will stream here live.</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {activities.map((act) => {
+              const isBooking = act.type.includes('Viewing');
+              const isStage = act.type.includes('Stage');
+
+              return (
+                <div
+                  key={act._id}
+                  onClick={() => {
+                    if (isBooking) onNavigateTab('calendar');
+                    else if (isStage) onNavigateTab('pipeline');
+                  }}
+                  className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 hover:bg-slate-900/90 transition-all cursor-pointer flex flex-col justify-between group"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className={`p-1.5 rounded-lg ${
+                        isBooking ? 'bg-emerald-500/10 text-emerald-400' :
+                        isStage ? 'bg-blue-500/10 text-blue-400' :
+                        'bg-violet-500/10 text-violet-400'
+                      }`}>
+                        {isBooking ? <CalendarCheck className="w-4 h-4" /> :
+                         isStage ? <ArrowRightCircle className="w-4 h-4" /> :
+                         <UserPlus className="w-4 h-4" />}
+                      </div>
+                      <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                        {act.title || act.type}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 shrink-0">
+                      {new Date(act.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-3">
+                    {act.note}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px] text-slate-400">
+                    <span>By: <strong className="text-slate-300">{act.author || 'System'}</strong></span>
+                    {act.lead && (
+                      <span className="text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded font-medium">
+                        {act.lead.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

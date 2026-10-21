@@ -78,3 +78,19 @@ export interface DashboardMetrics {
   upcomingViewings: Viewing[];
   pendingTasks: Task[];
 }
+
+export interface ActivityLog {
+  _id: string;
+  user?: string;
+  lead?: Lead;
+  property?: Property;
+  viewing?: Viewing;
+  type: 'Call' | 'Email' | 'Viewing Note' | 'Stage Changed' | 'General' | 'Viewing Booked' | 'Viewing Completed' | 'Reminder Sent';
+  title?: string;
+  note: string;
+  author?: string;
+  isRead?: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+

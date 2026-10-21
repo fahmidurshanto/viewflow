@@ -382,7 +382,7 @@ export const SettingsView: React.FC = () => {
                 type="button"
                 onClick={handleTestEmail}
                 disabled={testingEmail}
-                className="w-full py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 hover:text-white border border-blue-500/30 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                className="w-full py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 hover:text-white border border-blue-500/30 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {testingEmail ? (
                   <div className="w-3.5 h-3.5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
@@ -392,9 +392,8 @@ export const SettingsView: React.FC = () => {
                 Send Test Email
               </button>
               {emailTestResult && (
-                <div className={`text-xs p-2 rounded-lg ${
-                  emailTestResult.success ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
-                }`}>
+                <div className={`text-xs p-2 rounded-lg ${emailTestResult.success ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
+                  }`}>
                   {emailTestResult.message}
                 </div>
               )}
@@ -411,7 +410,7 @@ export const SettingsView: React.FC = () => {
               </p>
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(
-`🏡 *New Property Viewing Request*
+                  `🏡 *New Property Viewing Request*
 ━━━━━━━━━━━━━━━━━━━━
 👤 *Client:* Sample Client
 📱 *Phone:* +1 (555) 019-2834
@@ -426,7 +425,7 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                className="w-full py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30  hover:text-white border border-emerald-500/30 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 Preview Direct WhatsApp Chat

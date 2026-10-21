@@ -143,6 +143,45 @@ export const api = {
       body: JSON.stringify(data)
     });
   },
+  bookViewingPublic: async (data: {
+    propertyId: string;
+    clientName?: string;
+    name?: string;
+    clientEmail?: string;
+    email?: string;
+    clientPhone?: string;
+    phone?: string;
+    date?: string;
+    time?: string;
+    scheduledDate?: string;
+    duration?: number;
+    durationMinutes?: number;
+    notes?: string;
+  }) => {
+    let scheduledDate = data.scheduledDate;
+    if (!scheduledDate && data.date && data.time) {
+      const [time, period] = data.time.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+      if (period === 'PM' && hours !== 12) hours += 12;
+      if (period === 'AM' && hours === 12) hours = 0;
+      const d = new Date(`${data.date}T00:00:00.000Z`);
+      d.setUTCHours(hours, minutes, 0, 0);
+      scheduledDate = d.toISOString();
+    }
+
+    return request('/viewings/public-book', {
+      method: 'POST',
+      body: JSON.stringify({
+        propertyId: data.propertyId,
+        name: data.clientName || data.name,
+        email: data.clientEmail || data.email,
+        phone: data.clientPhone || data.phone || '',
+        scheduledDate,
+        durationMinutes: data.duration || data.durationMinutes || 45,
+        notes: data.notes || ''
+      })
+    });
+  },
   updateViewingStatus: async (id: string, status: string, feedback?: any) => {
     return request(`/viewings/${id}/status`, {
       method: 'PATCH',
@@ -188,6 +227,31 @@ export const api = {
     return request('/settings/test-whatsapp', {
       method: 'POST',
       body: JSON.stringify({ toPhone })
+    });
+  },
+
+  // Activities & Notifications
+  getActivities: async (params?: { limit?: number; unreadOnly?: boolean }) => {
+    const query = new URLSearchParams(params as any).toString();
+    return request(`/activities?${query}`);
+  },
+  markActivitiesRead: async (activityIds?: string[]) => {
+    return request('/activities/mark-read', {
+      method: 'PUT',
+      body: JSON.stringify({ activityIds })
+    });
+  },
+  createActivity: async (data: {
+    lead?: string;
+    property?: string;
+    viewing?: string;
+    type?: string;
+    title?: string;
+    note: string;
+  }) => {
+    return request('/activities', {
+      method: 'POST',
+      body: JSON.stringify(data)
     });
   },
 

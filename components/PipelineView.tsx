@@ -242,7 +242,7 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
       {/* Enhanced Drag & Drop Kanban Board */}
       <div 
         ref={boardScrollRef}
-        className="w-full overflow-x-auto pb-4 pt-1 scrollbar-none"
+        className="w-full overflow-x-auto pb-4 pt-1 scrollbar-none pipeline-container"
       >
         <div className="flex items-start gap-4 min-w-max">
         {STAGES.map((col) => {
