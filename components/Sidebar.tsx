@@ -12,9 +12,13 @@ import {
   Moon, 
   LogIn, 
   LogOut,
-  X
+  X,
+  CreditCard,
+  Clock,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { usePlanAccess } from '@/hooks/usePlanAccess';
 
 interface SidebarProps {
   activeTab: string;
@@ -36,12 +40,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile
 }) => {
   const { user, logout } = useAuth();
+  const { isTrial, trialDaysLeft, isTrialExpired } = usePlanAccess();
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'properties', label: 'Properties', icon: Building2 },
     { id: 'pipeline', label: 'Lead Pipeline', icon: Users2 },
     { id: 'calendar', label: 'Viewing Calendar', icon: CalendarDays },
     { id: 'tasks', label: 'Tasks & Follow-ups', icon: CheckSquare2 },
+    { id: 'pricing', label: 'Plans & Billing', icon: CreditCard },
     { id: 'settings', label: 'Settings & Integrations', icon: Settings },
   ];
 
@@ -174,10 +180,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                 </div>
                 <div className="text-left overflow-hidden flex-1">
-                  <div className="text-xs font-semibold text-slate-200 truncate">{user.name}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold text-slate-200 truncate">{user.name}</span>
+                    {isTrial ? (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0 flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5 text-amber-400" />
+                        {isTrialExpired ? 'Expired' : `${trialDaysLeft}d Trial`}
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-md bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
+                        {user.subscriptionPlan || 'Growth'}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-[10px] text-slate-400 truncate">{user.agencyName || user.email}</div>
                 </div>
               </div>
+
+              {/* Free Trial Banner / CTA if in trial */}
+              {isTrial && (
+                <div 
+                  onClick={() => setActiveTab('pricing')}
+                  className="mx-1 p-2 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 flex items-center justify-between cursor-pointer hover:border-amber-400/50 transition-all group"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
+                    <span className="text-[11px] font-semibold text-amber-300">
+                      {isTrialExpired ? 'Trial Expired' : `${trialDaysLeft} Days Left in Trial`}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-400 group-hover:underline">
+                    Upgrade
+                  </span>
+                </div>
+              )}
 
               <div className="flex items-center gap-2 pt-1 px-1">
                 <button

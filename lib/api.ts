@@ -41,6 +41,12 @@ export const api = {
   getCurrentUser: async () => {
     return request('/auth/me');
   },
+  updateSubscription: async (data: { plan: string; billingCycle: string }) => {
+    return request('/auth/subscription', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+  },
 
   // Media Upload
   uploadImages: async (files: File[]) => {

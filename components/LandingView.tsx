@@ -27,6 +27,7 @@ interface LandingViewProps {
 
 export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
   const [showModal, setShowModal] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -102,11 +103,14 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
               className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
               style={{ color: '#ffffff' }}
             >
-              <Lock className="w-4 h-4 text-white" style={{ color: '#ffffff' }} />
-              <span style={{ color: '#ffffff' }}>Access Private Workspace</span>
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span style={{ color: '#ffffff' }}>Start 30-Day Free Trial</span>
               <ArrowRight className="w-4 h-4 text-white" style={{ color: '#ffffff' }} />
             </button>
           </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            No credit card required • Instant access to Growth tier features
+          </p>
 
           <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs font-medium opacity-80">
             <span className="flex items-center gap-1.5">
@@ -151,6 +155,169 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
             <p className="text-xs leading-relaxed opacity-75">
               Every agency’s listings and prospective buyers remain completely isolated and secured behind HttpOnly cookies.
             </p>
+          </div>
+        </div>
+
+        {/* Public SaaS Pricing Table Section */}
+        <div className="mt-24 space-y-10" id="pricing">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-xs font-semibold text-blue-600 dark:text-blue-400">
+              <Sparkles className="w-3.5 h-3.5 shrink-0" />
+              <span>Transparent & Predictable Pricing</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
+              Invest in higher viewing conversions
+            </h2>
+            <p className="text-sm opacity-75">
+              Choose the right plan for your agency. Every plan includes a 14-day free trial with zero setup fees.
+            </p>
+
+            {/* Monthly / Annual Toggle */}
+            <div className="pt-4 flex items-center justify-center">
+              <div className="flex items-center p-1 rounded-2xl bg-slate-800/60 border border-slate-700/80 shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle('monthly')}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    billingCycle === 'monthly'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  Monthly Billing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBillingCycle('yearly')}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                    billingCycle === 'yearly'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <span>Annual Billing</span>
+                  <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    SAVE 20%
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+            {/* 1. Starter Tier */}
+            <div className="glass-card p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 relative border hover:border-slate-600 transition-all">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-lg">Solo Agent</h3>
+                  <p className="text-xs opacity-75">Essential tools for independent brokers and single agents.</p>
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black">${billingCycle === 'monthly' ? '29' : '23'}</span>
+                    <span className="text-xs font-semibold opacity-60">/ month</span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <div className="text-[11px] text-emerald-500 font-semibold mt-1">Billed $276 annually (Save $72)</div>
+                  )}
+                </div>
+                <div className="pt-2 border-t border-slate-700/40">
+                  <ul className="space-y-2.5 text-xs">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Up to 15 Active Properties</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Conflict-Free Viewing Calendar</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Automated Email Confirmations</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0" /> Self-Booking Client Portal Link</li>
+                    <li className="flex items-center gap-2 opacity-50"><CheckCircle2 className="w-4 h-4 shrink-0" /> Instant WhatsApp Alerts</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs tracking-wide border border-slate-700 hover:border-blue-500/50 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                Start 14-Day Free Trial
+              </button>
+            </div>
+
+            {/* 2. Growth Tier (Highlighted / Most Popular) */}
+            <div className="p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 relative bg-gradient-to-b from-blue-600/15 via-indigo-600/10 to-slate-900/60 border-2 border-blue-500 shadow-2xl shadow-blue-500/20 md:-translate-y-2">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-bold shadow-md shadow-blue-500/40 uppercase tracking-wider">
+                Most Popular
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-lg text-blue-400">Growth Agency</h3>
+                  <p className="text-xs opacity-75">Full pipeline power for active, expanding real estate teams.</p>
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-white">${billingCycle === 'monthly' ? '79' : '63'}</span>
+                    <span className="text-xs font-semibold opacity-60">/ month</span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <div className="text-[11px] text-emerald-400 font-semibold mt-1">Billed $756 annually (Save $192)</div>
+                  )}
+                </div>
+                <div className="pt-2 border-t border-slate-700/40">
+                  <ul className="space-y-2.5 text-xs text-slate-200">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> <strong>Unlimited</strong> Property Listings</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Interactive Drag & Drop Kanban Pipeline</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Automated <strong>WhatsApp & Email Alerts</strong></li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Customizable Dynamic Message Templates</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Post-Viewing Feedback & Offer Loop</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Full Cloudinary Image CDN Pipeline</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wide shadow-xl shadow-blue-600/30 transition-all cursor-pointer active:scale-95"
+              >
+                Start Free Trial & Upgrade
+              </button>
+            </div>
+
+            {/* 3. Enterprise Tier */}
+            <div className="glass-card p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 relative border hover:border-slate-600 transition-all">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-lg text-purple-400">Enterprise</h3>
+                  <p className="text-xs opacity-75">Large brokerages, multi-office franchises, and luxury agencies.</p>
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-black">${billingCycle === 'monthly' ? '199' : '159'}</span>
+                    <span className="text-xs font-semibold opacity-60">/ month</span>
+                  </div>
+                  {billingCycle === 'yearly' && (
+                    <div className="text-[11px] text-emerald-500 font-semibold mt-1">Billed $1,908 annually (Save $480)</div>
+                  )}
+                </div>
+                <div className="pt-2 border-t border-slate-700/40">
+                  <ul className="space-y-2.5 text-xs">
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" /> Unlimited Team Agent Seats</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" /> Custom Domain & Whitelabel Branding</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" /> Executive CSV & PDF Exports</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" /> High-volume Gmail SMTP Dispatch</li>
+                    <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-purple-400 shrink-0" /> Dedicated Account Manager & 24/7 SLA</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowModal(true)}
+                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs tracking-wide border border-slate-700 hover:border-purple-500/50 transition-all cursor-pointer shadow-sm active:scale-95"
+              >
+                Contact Brokerage Sales
+              </button>
+            </div>
           </div>
         </div>
       </main>

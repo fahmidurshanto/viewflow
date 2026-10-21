@@ -15,11 +15,14 @@ import {
   MessageCircle,
   Mail,
   FileSpreadsheet,
-  Printer
+  Printer,
+  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Viewing, Property, Lead } from '@/types';
 import { exportToCSV, exportToPDFReport } from '@/lib/exportUtils';
+import { usePlanAccess } from '@/hooks/usePlanAccess';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 interface CalendarViewProps {
   viewings: Viewing[];
@@ -27,6 +30,7 @@ interface CalendarViewProps {
   leads: Lead[];
   onRefresh: () => void;
   api: any;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
@@ -34,8 +38,19 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   properties,
   leads,
   onRefresh,
-  api
+  api,
+  onNavigateTab
 }) => {
+  const { canAccess, userPlan } = usePlanAccess();
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeModalInfo, setUpgradeModalInfo] = useState<{
+    title: string;
+    description: string;
+    requiredPlan?: 'Growth' | 'Enterprise';
+  }>({
+    title: 'Feature Locked',
+    description: 'Upgrade your subscription to unlock this feature.'
+  });
   const [showBookModal, setShowBookModal] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
 
@@ -177,11 +192,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   ];
 
   const handleExportCSV = () => {
+    if (!canAccess('allowPdfExport')) {
+      setUpgradeModalInfo({
+        title: 'Calendar Schedule Export Locked',
+        description: 'Exporting appointment schedules to CSV spreadsheet requires a Growth or Enterprise plan.',
+        requiredPlan: 'Growth'
+      });
+      setUpgradeModalOpen(true);
+      return;
+    }
     exportToCSV('viewings_schedule', viewingExportColumns, viewings);
     toast.success('Viewing schedule spreadsheet downloaded!');
   };
 
   const handlePrintPDF = () => {
+    if (!canAccess('allowPdfExport')) {
+      setUpgradeModalInfo({
+        title: 'Viewing Agenda PDF Locked',
+        description: 'Generating printable viewing agenda PDF dossiers requires a Growth or Enterprise plan.',
+        requiredPlan: 'Growth'
+      });
+      setUpgradeModalOpen(true);
+      return;
+    }
     exportToPDFReport('Viewing Appointments Schedule', 'ViewFlow Real Estate', viewingExportColumns, viewings);
   };
 
@@ -203,7 +236,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
             title="Download Schedule CSV"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            {!canAccess('allowPdfExport') ? (
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            )}
             <span>Export CSV</span>
           </button>
 
@@ -214,7 +251,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
             title="Print Viewing Agenda PDF"
           >
-            <Printer className="w-3.5 h-3.5 text-blue-400" />
+            {!canAccess('allowPdfExport') ? (
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Printer className="w-3.5 h-3.5 text-blue-400" />
+            )}
             <span>Print PDF</span>
           </button>
 
@@ -720,6 +761,18 @@ Please let me know if you need any directions or have questions prior to our vis
           </div>
         </div>
       )}
+
+      {/* Upgrade / Feature Paywall Modal */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        title={upgradeModalInfo.title}
+        description={upgradeModalInfo.description}
+        requiredPlan={upgradeModalInfo.requiredPlan || 'Growth'}
+        onUpgradeClick={() => {
+          if (onNavigateTab) onNavigateTab('pricing');
+        }}
+      />
     </div>
   );
 };

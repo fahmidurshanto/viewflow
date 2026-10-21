@@ -15,12 +15,30 @@ import {
   BellRing,
   FileSignature,
   RotateCcw,
-  AlertTriangle
+  AlertTriangle,
+  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
+import { usePlanAccess } from '@/hooks/usePlanAccess';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
-export const SettingsView: React.FC = () => {
+interface SettingsViewProps {
+  onNavigateTab?: (tab: string) => void;
+}
+
+export const SettingsView: React.FC<SettingsViewProps> = ({ onNavigateTab }) => {
+  const { canAccess, userPlan } = usePlanAccess();
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeModalInfo, setUpgradeModalInfo] = useState<{
+    title: string;
+    description: string;
+    requiredPlan?: 'Growth' | 'Enterprise';
+  }>({
+    title: 'Feature Locked',
+    description: 'Upgrade your subscription to use this feature.'
+  });
+
   const [loading, setLoading] = useState<boolean>(true);
   const [saved, setSaved] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
@@ -481,15 +499,33 @@ If you need to reschedule or have any questions ahead of time, please reply dire
             </button>
             <button
               type="button"
-              onClick={() => setActiveTemplateTab('whatsapp')}
+              onClick={() => {
+                if (!canAccess('allowWhatsApp')) {
+                  setUpgradeModalInfo({
+                    title: 'WhatsApp Automation Locked',
+                    description: 'Automated WhatsApp viewing reminders and client messaging are available on Growth and Enterprise plans.',
+                    requiredPlan: 'Growth'
+                  });
+                  setUpgradeModalOpen(true);
+                  return;
+                }
+                setActiveTemplateTab('whatsapp');
+              }}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                 activeTemplateTab === 'whatsapp'
                   ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
-              <MessageCircle className="w-3.5 h-3.5" />
-              WhatsApp Template
+              {!canAccess('allowWhatsApp') ? (
+                <Lock className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <MessageCircle className="w-3.5 h-3.5" />
+              )}
+              <span>WhatsApp Template</span>
+              {!canAccess('allowWhatsApp') && (
+                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/20 text-amber-300 rounded font-medium">Growth</span>
+              )}
             </button>
           </div>
 
@@ -782,6 +818,18 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
           </button>
         </div>
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        title={upgradeModalInfo.title}
+        description={upgradeModalInfo.description}
+        requiredPlan={upgradeModalInfo.requiredPlan || 'Growth'}
+        onUpgradeClick={() => {
+          if (onNavigateTab) onNavigateTab('pricing');
+        }}
+      />
     </div>
   );
 };

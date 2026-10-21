@@ -11,7 +11,8 @@ import {
   Users2, 
   CalendarDays, 
   CheckSquare2, 
-  Settings 
+  Settings,
+  CreditCard
 } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { DashboardView } from '@/components/DashboardView';
@@ -20,6 +21,7 @@ import { PipelineView } from '@/components/PipelineView';
 import { CalendarView } from '@/components/CalendarView';
 import { TasksView } from '@/components/TasksView';
 import { SettingsView } from '@/components/SettingsView';
+import { PricingView } from '@/components/PricingView';
 import { AuthModal } from '@/components/AuthModal';
 import { LandingView } from '@/components/LandingView';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -193,6 +195,7 @@ function MainApp() {
                 properties={properties}
                 onRefresh={fetchData}
                 api={api}
+                onNavigateTab={setActiveTab}
               />
             )}
 
@@ -211,6 +214,7 @@ function MainApp() {
                 leads={leads}
                 onRefresh={fetchData}
                 api={api}
+                onNavigateTab={setActiveTab}
               />
             )}
 
@@ -222,7 +226,9 @@ function MainApp() {
               />
             )}
 
-            {activeTab === 'settings' && <SettingsView />}
+            {activeTab === 'pricing' && <PricingView />}
+
+            {activeTab === 'settings' && <SettingsView onNavigateTab={setActiveTab} />}
           </>
         )}
       </main>

@@ -10,6 +10,11 @@ export interface AuthUser {
   agencyName?: string;
   phone?: string;
   role?: string;
+  subscriptionPlan?: 'Starter' | 'Growth' | 'Enterprise';
+  subscriptionBillingCycle?: 'monthly' | 'yearly';
+  subscriptionStatus?: 'active' | 'trial' | 'expired' | 'past_due';
+  trialStartedAt?: string;
+  trialEndsAt?: string;
 }
 
 interface AuthContextType {
@@ -46,7 +51,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: res.user.email,
             agencyName: res.user.agencyName,
             phone: res.user.phone,
-            role: res.user.role
+            role: res.user.role,
+            subscriptionPlan: res.user.subscriptionPlan || 'Growth',
+            subscriptionBillingCycle: res.user.subscriptionBillingCycle || 'monthly',
+            subscriptionStatus: res.user.subscriptionStatus || 'trial',
+            trialStartedAt: res.user.trialStartedAt,
+            trialEndsAt: res.user.trialEndsAt
           });
           return;
         }

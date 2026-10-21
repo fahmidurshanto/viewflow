@@ -21,19 +21,34 @@ import {
   Building2,
   Calendar,
   FileSpreadsheet,
-  Printer
+  Printer,
+  Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Property } from '@/types';
 import { exportToCSV, exportToPDFReport } from '@/lib/exportUtils';
+import { usePlanAccess } from '@/hooks/usePlanAccess';
+import { UpgradeModal } from '@/components/UpgradeModal';
 
 interface PropertiesViewProps {
   properties: Property[];
   onRefresh: () => void;
   api: any;
+  onNavigateTab?: (tab: string) => void;
 }
 
-export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRefresh, api }) => {
+export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRefresh, api, onNavigateTab }) => {
+  const { userPlan, limits, canAccess, isQuotaReached } = usePlanAccess();
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeModalInfo, setUpgradeModalInfo] = useState<{
+    title: string;
+    description: string;
+    requiredPlan?: 'Growth' | 'Enterprise';
+  }>({
+    title: 'Upgrade Required',
+    description: 'Upgrade your subscription to unlock this feature.'
+  });
+
   const [filterType, setFilterType] = useState<string>('All');
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [search, setSearch] = useState<string>('');
@@ -207,16 +222,86 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
   ];
 
   const handleExportCSV = () => {
+    if (!canAccess('allowPdfExport')) {
+      setUpgradeModalInfo({
+        title: 'Spreadsheet Export Locked',
+        description: 'Exporting CSV inventory and financial reports requires a Growth or Enterprise plan.',
+        requiredPlan: 'Growth'
+      });
+      setUpgradeModalOpen(true);
+      return;
+    }
     exportToCSV('properties_inventory', propertyExportColumns, filtered);
     toast.success('Property inventory spreadsheet downloaded!');
   };
 
   const handlePrintPDF = () => {
+    if (!canAccess('allowPdfExport')) {
+      setUpgradeModalInfo({
+        title: 'Executive PDF Dossier Locked',
+        description: 'Generating branded PDF portfolio dossiers requires a Growth or Enterprise plan.',
+        requiredPlan: 'Growth'
+      });
+      setUpgradeModalOpen(true);
+      return;
+    }
     exportToPDFReport('Property Portfolio Report', 'ViewFlow Real Estate', propertyExportColumns, filtered);
+  };
+
+  const handleAddPropertyClick = () => {
+    if (isQuotaReached(properties.length)) {
+      setUpgradeModalInfo({
+        title: 'Property Listing Limit Reached',
+        description: `You have reached the maximum limit of ${limits.maxProperties} active properties allowed on the ${userPlan} plan. Upgrade to Growth for unlimited listings.`,
+        requiredPlan: 'Growth'
+      });
+      setUpgradeModalOpen(true);
+      return;
+    }
+    setFormData(initialFormState);
+    setShowAddModal(true);
   };
 
   return (
     <div className="space-y-6">
+      {/* Quota Progress Banner for Starter Plan */}
+      {limits.maxProperties !== Infinity && (
+        <div className="p-3.5 px-4 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs">
+              {properties.length}/{limits.maxProperties}
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-200">
+                Active Property Listings Limit ({userPlan} Plan)
+              </p>
+              <div className="w-36 sm:w-48 bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
+                <div
+                  className={`h-full transition-all duration-300 ${
+                    properties.length >= limits.maxProperties
+                      ? 'bg-rose-500'
+                      : properties.length >= limits.maxProperties * 0.8
+                      ? 'bg-amber-500'
+                      : 'bg-blue-500'
+                  }`}
+                  style={{ width: `${Math.min(100, (properties.length / limits.maxProperties) * 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigateTab) onNavigateTab('pricing');
+            }}
+            className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer self-start sm:self-auto"
+          >
+            <span>Upgrade for Unlimited</span>
+            <Sparkles className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -233,7 +318,11 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
             className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
             title="Download Properties CSV"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            {!canAccess('allowPdfExport') ? (
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            )}
             <span>Export CSV</span>
           </button>
 
@@ -244,15 +333,16 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
             className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
             title="Print Portfolio PDF Report"
           >
-            <Printer className="w-3.5 h-3.5 text-blue-400" />
+            {!canAccess('allowPdfExport') ? (
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Printer className="w-3.5 h-3.5 text-blue-400" />
+            )}
             <span>Print PDF</span>
           </button>
 
           <button
-            onClick={() => {
-              setFormData(initialFormState);
-              setShowAddModal(true);
-            }}
+            onClick={handleAddPropertyClick}
             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -1076,6 +1166,18 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
           </div>
         </div>
       )}
+
+      {/* Upgrade / Feature Paywall Modal */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        title={upgradeModalInfo.title}
+        description={upgradeModalInfo.description}
+        requiredPlan={upgradeModalInfo.requiredPlan || 'Growth'}
+        onUpgradeClick={() => {
+          if (onNavigateTab) onNavigateTab('pricing');
+        }}
+      />
     </div>
   );
 };
