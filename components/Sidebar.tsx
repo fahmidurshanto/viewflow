@@ -10,7 +10,6 @@ import {
   Settings, 
   Sun, 
   Moon, 
-  Sparkles, 
   LogIn, 
   LogOut,
   X
@@ -130,32 +129,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Pro Badge, Theme Toggle & User Footer */}
       <div className="p-4 space-y-3">
-        {/* Dark / Light Mode Switcher */}
-        <button
+        {/* Full Switch Theme Segment Control */}
+        <div 
           onClick={toggleTheme}
-          className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 transition-all text-xs font-semibold text-slate-300 cursor-pointer shadow-sm"
+          role="switch"
+          aria-checked={theme === 'dark'}
+          className="relative w-full p-1 rounded-2xl bg-slate-900/90 border border-slate-700/60 flex items-center cursor-pointer select-none shadow-inner transition-all hover:border-slate-600/80 theme-switch-container"
         >
-          <span className="flex items-center gap-2">
-            {theme === 'dark' ? (
-              <Moon className="w-4 h-4 text-blue-400" />
-            ) : (
-              <Sun className="w-4 h-4 text-amber-500" />
-            )}
-            <span>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-          </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-md bg-blue-600/20 text-blue-400 font-bold">
-            Toggle
-          </span>
-        </button>
+          {/* Animated Sliding Pill Highlight */}
+          <div
+            className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl transition-all duration-300 ease-out shadow-md theme-switch-pill ${
+              theme === 'light'
+                ? 'left-1 bg-white text-slate-900 shadow-slate-900/10'
+                : 'left-[calc(50%+2px)] bg-blue-600 text-white shadow-blue-600/30'
+            }`}
+          />
 
-        <div className="p-3.5 rounded-xl bg-gradient-to-br from-indigo-950/70 to-blue-950/40 border border-blue-500/20">
-          <div className="flex items-center gap-2 text-blue-400 font-semibold text-xs mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            Vibe96 Ready Edition
+          {/* Light Mode Segment */}
+          <div
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-xl transition-colors duration-300 ${
+              theme === 'light' ? 'switch-active-light text-slate-900 font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sun className={`w-4 h-4 transition-transform duration-300 ${theme === 'light' ? 'text-amber-500 scale-110 rotate-12' : 'text-slate-400'}`} />
+            <span>Light</span>
           </div>
-          <p className="text-[12px] text-slate-400 leading-snug">
-            Automated calendar reminders & smart lead tracking.
-          </p>
+
+          {/* Dark Mode Segment */}
+          <div
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2 text-xs font-semibold rounded-xl transition-colors duration-300 ${
+              theme === 'dark' ? 'text-white font-bold' : 'switch-inactive-dark text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Moon className={`w-4 h-4 transition-transform duration-300 ${theme === 'dark' ? 'text-white scale-110 -rotate-12' : 'text-slate-400'}`} />
+            <span>Dark</span>
+          </div>
         </div>
 
         <div className="pt-3 border-t border-slate-800/70">

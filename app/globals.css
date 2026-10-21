@@ -83,7 +83,10 @@ html.light .viewflow-root,
   .force-white,
   .brand-icon,
   .brand-icon svg,
-  .brand-icon path {
+  .brand-icon path,
+  .stat-icon-badge,
+  .stat-icon-badge svg,
+  .stat-icon-badge path {
     color: #ffffff !important;
     stroke: #ffffff !important;
   }
@@ -228,6 +231,28 @@ html.light .viewflow-root,
   aside .bg-clip-text {
     background-image: linear-gradient(to right, #1d4ed8, #3b82f6) !important;
   }
+
+  /* Full Theme Switch Control in Light Mode */
+  .theme-switch-container {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+  }
+  .theme-switch-pill {
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  }
+  .theme-switch-container .switch-active-light {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+  .theme-switch-container .switch-inactive-dark {
+    color: #64748b !important;
+  }
+  .theme-switch-container .switch-inactive-dark svg {
+    color: #64748b !important;
+    stroke: #64748b !important;
+  }
 }
 
 /* Custom scrollbars */
@@ -245,4 +270,15 @@ html.light .viewflow-root,
 html.light ::-webkit-scrollbar-thumb,
 [data-theme="light"] ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.scrollbar-none,
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

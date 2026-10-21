@@ -102,8 +102,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ data, onNavigateTa
                 <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
                   {card.label}
                 </span>
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${card.color} flex items-center justify-center text-white shadow-md`}>
-                  <Icon className="w-4 h-4" />
+                <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${card.color} flex items-center justify-center text-white force-white stat-icon-badge shadow-md`}>
+                  <Icon className="w-4 h-4 text-white force-white" />
                 </div>
               </div>
               <div>

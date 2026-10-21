@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   Plus, 
   Phone, 
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Lead } from '@/types';
+import { ZipperScrollbar } from './ZipperScrollbar';
 
 interface PipelineViewProps {
   leads: Lead[];
@@ -75,6 +76,7 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
   const [showAddLeadModal, setShowAddLeadModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
+  const boardScrollRef = useRef<HTMLDivElement | null>(null);
 
   // Form State
   const [newLeadForm, setNewLeadForm] = useState({
@@ -238,7 +240,10 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
       </div>
 
       {/* Enhanced Drag & Drop Kanban Board */}
-      <div className="w-full overflow-x-auto pb-6 pt-1">
+      <div 
+        ref={boardScrollRef}
+        className="w-full overflow-x-auto pb-4 pt-1 scrollbar-none"
+      >
         <div className="flex items-start gap-4 min-w-max">
         {STAGES.map((col) => {
           const colLeads = filteredLeads.filter((l) => l.stage === col.id);
@@ -348,6 +353,9 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
         })}
         </div>
       </div>
+
+      {/* Interactive Zipper Scrollbar Controller */}
+      <ZipperScrollbar containerRef={boardScrollRef} className="mt-1" />
 
       {/* Lead Details & History Drawer */}
       {selectedLead && (
