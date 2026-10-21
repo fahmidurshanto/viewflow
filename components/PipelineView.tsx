@@ -76,7 +76,14 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
   const [showAddLeadModal, setShowAddLeadModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
+  const [activeDropStage, setActiveDropStage] = useState<string | null>(null);
+  const [optimisticLeads, setOptimisticLeads] = useState<Lead[]>(leads);
   const boardScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Sync optimistic leads when leads prop updates
+  React.useEffect(() => {
+    setOptimisticLeads(leads);
+  }, [leads]);
 
   // Form State
   const [newLeadForm, setNewLeadForm] = useState({
@@ -91,19 +98,27 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
   });
 
   // Pipeline Metrics
-  const totalPipelineValue = leads.reduce((acc, lead) => acc + (lead.budget || 0), 0);
-  const filteredLeads = leads.filter(l => 
+  const totalPipelineValue = optimisticLeads.reduce((acc, lead) => acc + (lead.budget || 0), 0);
+  const filteredLeads = optimisticLeads.filter(l => 
     l.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     l.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     l.phone.includes(searchQuery)
   );
 
   const handleStageMove = async (leadId: string, newStage: string) => {
+    const previous = [...optimisticLeads];
+    // Optimistic UI update
+    setOptimisticLeads(prev =>
+      prev.map(l => (l._id === leadId ? { ...l, stage: newStage as any } : l))
+    );
+
     try {
       await api.updateLeadStage(leadId, newStage);
-      toast.success(`Lead moved to "${newStage}" stage`);
+      toast.success(`Deal moved to "${newStage}" stage`);
       onRefresh();
     } catch (err: any) {
+      // Revert on error
+      setOptimisticLeads(previous);
       console.error(err);
       toast.error(err.message || 'Failed to update lead stage');
     }
@@ -111,18 +126,41 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
 
   const handleDragStart = (e: React.DragEvent, leadId: string) => {
     e.dataTransfer.setData('text/plain', leadId);
+    e.dataTransfer.effectAllowed = 'move';
     setDraggedLeadId(leadId);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragEnd = () => {
+    setDraggedLeadId(null);
+    setActiveDropStage(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, stageId: string) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (activeDropStage !== stageId) {
+      setActiveDropStage(stageId);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent, stageId: string) => {
+    e.preventDefault();
+    // Only unset if leaving column container
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    if (activeDropStage === stageId) {
+      setActiveDropStage(null);
+    }
   };
 
   const handleDrop = async (e: React.DragEvent, targetStage: string) => {
     e.preventDefault();
+    setActiveDropStage(null);
     const leadId = e.dataTransfer.getData('text/plain') || draggedLeadId;
     if (leadId) {
-      await handleStageMove(leadId, targetStage);
+      const targetLead = optimisticLeads.find(l => l._id === leadId);
+      if (targetLead && targetLead.stage !== targetStage) {
+        await handleStageMove(leadId, targetStage);
+      }
     }
     setDraggedLeadId(null);
   };
@@ -248,108 +286,126 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
         {STAGES.map((col) => {
           const colLeads = filteredLeads.filter((l) => l.stage === col.id);
           const colValue = colLeads.reduce((sum, lead) => sum + (lead.budget || 0), 0);
+          const isDropTarget = activeDropStage === col.id && draggedLeadId !== null;
 
           return (
             <div
               key={col.id}
-              onDragOver={handleDragOver}
-              onDrop={(e) => handleDrop(e, col.id)}
-              className="glass-panel p-4 rounded-2xl flex flex-col w-[290px] shrink-0 border border-slate-800/80 transition-all duration-200"
-            >
-              {/* Column Header */}
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
-                <div className="flex items-center gap-2">
-                  <span 
-                    className="w-2.5 h-2.5 rounded-full shadow-sm"
-                    style={{ backgroundColor: col.accent, boxShadow: `0 0 8px ${col.glowColor}` }}
-                  />
-                  <span className="font-bold text-xs uppercase tracking-wider text-slate-200">
-                    {col.label}
-                  </span>
-                </div>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 font-bold text-slate-300">
-                  {colLeads.length}
-                </span>
-              </div>
-
-              {/* Sub-header: Column Total Value */}
-              <div className="text-[11px] text-slate-500 mb-3 px-1 flex justify-between items-center">
-                <span>Total Potential:</span>
-                <span className="font-semibold text-slate-300">${colValue.toLocaleString()}</span>
-              </div>
-
-              {/* Column Drop Zone / Cards List */}
-              <div className="space-y-3 overflow-y-auto pr-1 flex-1 min-h-[160px]">
-                {colLeads.length === 0 ? (
-                  <div className="h-28 rounded-xl border border-dashed border-slate-800/80 flex items-center justify-center text-[11px] text-slate-600">
-                    Drop deals here
-                  </div>
-                ) : (
-                  colLeads.map((lead) => (
-                    <div
-                      key={lead._id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, lead._id)}
-                      onClick={() => handleOpenLead(lead)}
-                      className="group p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-200 cursor-grab active:cursor-grabbing space-y-3 relative overflow-hidden"
-                    >
-                      {/* Left accent bar */}
-                      <div 
-                        className="absolute left-0 top-0 bottom-0 w-1 opacity-80 group-hover:w-1.5 transition-all"
-                        style={{ backgroundColor: col.accent }}
+                  onDragOver={(e) => handleDragOver(e, col.id)}
+                  onDragLeave={(e) => handleDragLeave(e, col.id)}
+                  onDrop={(e) => handleDrop(e, col.id)}
+                  className={`glass-panel p-4 rounded-2xl flex flex-col w-[290px] shrink-0 border transition-all duration-200 ${
+                    isDropTarget
+                      ? 'border-blue-500 shadow-xl shadow-blue-500/20 bg-blue-950/20 ring-2 ring-blue-500/40 scale-[1.01]'
+                      : 'border-slate-800/80 hover:border-slate-700/80'
+                  }`}
+                >
+                  {/* Column Header */}
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
+                    <div className="flex items-center gap-2">
+                      <span 
+                        className="w-2.5 h-2.5 rounded-full shadow-sm"
+                        style={{ backgroundColor: col.accent, boxShadow: `0 0 8px ${col.glowColor}` }}
                       />
-
-                      {/* Top row: Name & Source */}
-                      <div className="flex items-start justify-between gap-2 pl-1">
-                        <span className="font-semibold text-sm text-white group-hover:text-blue-400 transition-colors line-clamp-1">
-                          {lead.name}
-                        </span>
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 shrink-0">
-                          {lead.source || 'Website'}
-                        </span>
-                      </div>
-
-                      {/* Middle: Budget & Property */}
-                      <div className="space-y-1.5 pl-1 text-xs">
-                        <div className="flex items-center gap-1.5 text-slate-300">
-                          <DollarSign className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span className="font-medium text-slate-200">
-                            ${lead.budget ? lead.budget.toLocaleString() : 'Undisclosed'}
-                          </span>
-                        </div>
-
-                        {lead.interestedProperty && (
-                          <div className="flex items-center gap-1.5 text-[11px] text-blue-400 line-clamp-1">
-                            <Building className="w-3 h-3 shrink-0 text-blue-400/80" />
-                            <span>{lead.interestedProperty.title}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Footer: Quick Stage Select & Contact preview */}
-                      <div 
-                        className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs pl-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <span className="text-[10px] text-slate-500">Stage:</span>
-                        <select
-                          value={lead.stage}
-                          onChange={(e) => handleStageMove(lead._id, e.target.value)}
-                          className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] rounded-lg px-2 py-1 border border-slate-700 focus:outline-none cursor-pointer"
-                        >
-                          {STAGES.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <span className="font-bold text-xs uppercase tracking-wider text-slate-200">
+                        {col.label}
+                      </span>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
-          );
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 font-bold text-slate-300">
+                      {colLeads.length}
+                    </span>
+                  </div>
+
+                  {/* Sub-header: Column Total Value */}
+                  <div className="text-[11px] text-slate-500 mb-3 px-1 flex justify-between items-center">
+                    <span>Total Potential:</span>
+                    <span className="font-semibold text-slate-300">${colValue.toLocaleString()}</span>
+                  </div>
+
+                  {/* Column Drop Zone / Cards List */}
+                  <div className="space-y-3 overflow-y-auto pr-1 flex-1 min-h-[180px]">
+                    {colLeads.length === 0 ? (
+                      <div className={`h-32 rounded-xl border border-dashed flex flex-col items-center justify-center gap-1.5 text-xs transition-colors ${
+                        isDropTarget 
+                          ? 'border-blue-400 bg-blue-500/10 text-blue-300 font-semibold animate-pulse' 
+                          : 'border-slate-800/80 text-slate-500'
+                      }`}>
+                        <span>{isDropTarget ? 'Release to drop here' : 'Drop deals here'}</span>
+                      </div>
+                    ) : (
+                      colLeads.map((lead) => {
+                        const isBeingDragged = draggedLeadId === lead._id;
+                        return (
+                          <div
+                            key={lead._id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, lead._id)}
+                            onDragEnd={handleDragEnd}
+                            onClick={() => handleOpenLead(lead)}
+                            className={`group p-4 rounded-xl bg-slate-900/80 border transition-all duration-200 cursor-grab active:cursor-grabbing space-y-3 relative overflow-hidden select-none ${
+                              isBeingDragged
+                                ? 'opacity-40 border-dashed border-blue-400 scale-95 shadow-none'
+                                : 'border-slate-800/90 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-500/10'
+                            }`}
+                          >
+                            {/* Left accent bar */}
+                            <div 
+                              className="absolute left-0 top-0 bottom-0 w-1 opacity-80 group-hover:w-1.5 transition-all"
+                              style={{ backgroundColor: col.accent }}
+                            />
+
+                            {/* Top row: Name & Source */}
+                            <div className="flex items-start justify-between gap-2 pl-1">
+                              <span className="font-semibold text-sm text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                                {lead.name}
+                              </span>
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 shrink-0">
+                                {lead.source || 'Website'}
+                              </span>
+                            </div>
+
+                            {/* Middle: Budget & Property */}
+                            <div className="space-y-1.5 pl-1 text-xs">
+                              <div className="flex items-center gap-1.5 text-slate-300">
+                                <DollarSign className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <span className="font-medium text-slate-200">
+                                  ${lead.budget ? lead.budget.toLocaleString() : 'Undisclosed'}
+                                </span>
+                              </div>
+
+                              {lead.interestedProperty && (
+                                <div className="flex items-center gap-1.5 text-[11px] text-blue-400 line-clamp-1">
+                                  <Building className="w-3 h-3 shrink-0 text-blue-400/80" />
+                                  <span>{lead.interestedProperty.title}</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Footer: Quick Stage Select & Contact preview */}
+                            <div 
+                              className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs pl-1"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <span className="text-[10px] text-slate-500">Stage:</span>
+                              <select
+                                value={lead.stage}
+                                onChange={(e) => handleStageMove(lead._id, e.target.value)}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] rounded-lg px-2 py-1 border border-slate-700 focus:outline-none cursor-pointer"
+                              >
+                                {STAGES.map((s) => (
+                                  <option key={s.id} value={s.id}>
+                                    {s.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              );
         })}
         </div>
       </div>
