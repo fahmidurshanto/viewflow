@@ -13,10 +13,13 @@ import {
   Star,
   CheckCircle2,
   MessageCircle,
-  Mail
+  Mail,
+  FileSpreadsheet,
+  Printer
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Viewing, Property, Lead } from '@/types';
+import { exportToCSV, exportToPDFReport } from '@/lib/exportUtils';
 
 interface CalendarViewProps {
   viewings: Viewing[];
@@ -152,6 +155,36 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     }
   };
 
+  // Viewing Export Helpers
+  const viewingExportColumns = [
+    { header: 'Property Title', accessor: (v: Viewing) => v.property?.title || 'N/A' },
+    { header: 'Client Name', accessor: (v: Viewing) => v.lead?.name || 'N/A' },
+    { header: 'Client Phone', accessor: (v: Viewing) => v.lead?.phone || 'N/A' },
+    { header: 'Client Email', accessor: (v: Viewing) => v.lead?.email || 'N/A' },
+    { 
+      header: 'Viewing Date', 
+      accessor: (v: Viewing) => new Date(v.scheduledDate).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    },
+    { 
+      header: 'Viewing Time', 
+      accessor: (v: Viewing) => new Date(v.scheduledDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    },
+    { header: 'Duration', accessor: (v: Viewing) => `${v.durationMinutes || 45} mins` },
+    { header: 'Status', accessor: (v: Viewing) => v.status },
+    { header: 'Feedback Rating (1-5★)', accessor: (v: Viewing) => v.feedback?.rating ? `${v.feedback.rating}★` : '—' },
+    { header: 'Feedback Comments', accessor: (v: Viewing) => v.feedback?.comments || '—' },
+    { header: 'Interested in Offer', accessor: (v: Viewing) => v.feedback?.interestedInOffer ? 'Yes' : 'No' }
+  ];
+
+  const handleExportCSV = () => {
+    exportToCSV('viewings_schedule', viewingExportColumns, viewings);
+    toast.success('Viewing schedule spreadsheet downloaded!');
+  };
+
+  const handlePrintPDF = () => {
+    exportToPDFReport('Viewing Appointments Schedule', 'ViewFlow Real Estate', viewingExportColumns, viewings);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -162,16 +195,40 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             Schedule property tours and prevent double bookings automatically.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setConflictError(null);
-            setShowBookModal(true);
-          }}
-          className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Schedule Viewing
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Export CSV */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Download Schedule CSV"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Print PDF */}
+          <button
+            type="button"
+            onClick={handlePrintPDF}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Print Viewing Agenda PDF"
+          >
+            <Printer className="w-3.5 h-3.5 text-blue-400" />
+            <span>Print PDF</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setConflictError(null);
+              setShowBookModal(true);
+            }}
+            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            Schedule Viewing
+          </button>
+        </div>
       </div>
 
       {/* Viewing List Timeline */}

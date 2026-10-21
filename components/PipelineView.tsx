@@ -18,11 +18,14 @@ import {
   MapPin,
   ExternalLink,
   Send,
-  UserCheck
+  UserCheck,
+  FileSpreadsheet,
+  Printer
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Lead } from '@/types';
 import { ZipperScrollbar } from './ZipperScrollbar';
+import { exportToCSV, exportToPDFReport } from '@/lib/exportUtils';
 
 interface PipelineViewProps {
   leads: Lead[];
@@ -217,6 +220,28 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
     }
   };
 
+  // Export Helpers
+  const leadExportColumns = [
+    { header: 'Full Name', accessor: (l: Lead) => l.name },
+    { header: 'Email Address', accessor: (l: Lead) => l.email },
+    { header: 'Phone Number', accessor: (l: Lead) => l.phone || 'N/A' },
+    { header: 'Pipeline Stage', accessor: (l: Lead) => l.stage },
+    { header: 'Budget ($)', accessor: (l: Lead) => l.budget ? `$${l.budget.toLocaleString()}` : '$0' },
+    { header: 'Preferred Location', accessor: (l: Lead) => l.preferredLocation || 'Any' },
+    { header: 'Source', accessor: (l: Lead) => l.source || 'Website' },
+    { header: 'Notes', accessor: (l: Lead) => l.notes || '' },
+    { header: 'Created Date', accessor: (l: Lead) => l.createdAt ? new Date(l.createdAt).toLocaleDateString() : 'N/A' }
+  ];
+
+  const handleExportCSV = () => {
+    exportToCSV('leads_pipeline', leadExportColumns, optimisticLeads);
+    toast.success('Leads spreadsheet downloaded!');
+  };
+
+  const handlePrintPDF = () => {
+    exportToPDFReport('Leads & Pipeline Report', 'ViewFlow Real Estate', leadExportColumns, optimisticLeads);
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Banner / Summary Header */}
@@ -237,7 +262,7 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
         </div>
 
         {/* Action Bar & Quick Value Stats */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="px-4 py-2 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
             <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
               <TrendingUp className="w-4 h-4" />
@@ -250,9 +275,31 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
             </div>
           </div>
 
+          {/* Export CSV Button */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Download CSV Spreadsheet"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Print / PDF Button */}
+          <button
+            type="button"
+            onClick={handlePrintPDF}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Generate Printable PDF Report"
+          >
+            <Printer className="w-3.5 h-3.5 text-blue-400" />
+            <span>Print PDF</span>
+          </button>
+
           <button
             onClick={() => setShowAddLeadModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
             Add Prospect

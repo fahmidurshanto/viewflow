@@ -19,10 +19,13 @@ import {
   Eye,
   AlertTriangle,
   Building2,
-  Calendar
+  Calendar,
+  FileSpreadsheet,
+  Printer
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Property } from '@/types';
+import { exportToCSV, exportToPDFReport } from '@/lib/exportUtils';
 
 interface PropertiesViewProps {
   properties: Property[];
@@ -187,6 +190,31 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
     }
   };
 
+  // Property Export Helpers
+  const propertyExportColumns = [
+    { header: 'Property Title', accessor: (p: Property) => p.title },
+    { header: 'Listing Type', accessor: (p: Property) => p.type },
+    { header: 'Property Type', accessor: (p: Property) => p.propertyType },
+    { header: 'Status', accessor: (p: Property) => p.status },
+    { header: 'Price ($)', accessor: (p: Property) => p.price ? `$${p.price.toLocaleString()}` : '$0' },
+    { header: 'Bedrooms', accessor: (p: Property) => p.specs?.bedrooms ?? '—' },
+    { header: 'Bathrooms', accessor: (p: Property) => p.specs?.bathrooms ?? '—' },
+    { header: 'Area (SqFt)', accessor: (p: Property) => p.specs?.areaSqFt ?? '—' },
+    { header: 'Street Address', accessor: (p: Property) => p.address?.street || '—' },
+    { header: 'City', accessor: (p: Property) => p.address?.city || '—' },
+    { header: 'State', accessor: (p: Property) => p.address?.state || '—' },
+    { header: 'Zip Code', accessor: (p: Property) => p.address?.zipCode || '—' }
+  ];
+
+  const handleExportCSV = () => {
+    exportToCSV('properties_inventory', propertyExportColumns, filtered);
+    toast.success('Property inventory spreadsheet downloaded!');
+  };
+
+  const handlePrintPDF = () => {
+    exportToPDFReport('Property Portfolio Report', 'ViewFlow Real Estate', propertyExportColumns, filtered);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header & Controls */}
@@ -197,16 +225,40 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
             Manage your real estate portfolio, edit details, and copy booking links.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setFormData(initialFormState);
-            setShowAddModal(true);
-          }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-95"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Property</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Export CSV */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Download Properties CSV"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Export CSV</span>
+          </button>
+
+          {/* Print PDF */}
+          <button
+            type="button"
+            onClick={handlePrintPDF}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Print Portfolio PDF Report"
+          >
+            <Printer className="w-3.5 h-3.5 text-blue-400" />
+            <span>Print PDF</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setFormData(initialFormState);
+              setShowAddModal(true);
+            }}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Property</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
