@@ -94,10 +94,14 @@ export const api = {
     return request(`/leads?${query}`);
   },
   updateLeadStage: async (leadId: string, stage: string) => {
-    return request(`/leads/${leadId}/stage`, {
+    const res = await request(`/leads/${leadId}/stage`, {
       method: 'PATCH',
       body: JSON.stringify({ stage })
     });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viewflow:activity-updated'));
+    }
+    return res;
   },
   getLeadDetails: async (leadId: string) => {
     return request(`/leads/${leadId}`);
@@ -124,10 +128,14 @@ export const api = {
     return request(`/viewings/availability?propertyId=${encodeURIComponent(propertyId)}&date=${encodeURIComponent(date)}`);
   },
   createViewing: async (data: { property: string; lead: string; scheduledDate: string; durationMinutes?: number }) => {
-    return request('/viewings', {
+    const res = await request('/viewings', {
       method: 'POST',
       body: JSON.stringify(data)
     });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viewflow:activity-updated'));
+    }
+    return res;
   },
   publicBookViewing: async (data: {
     propertyId: string;
@@ -138,10 +146,14 @@ export const api = {
     durationMinutes?: number;
     notes?: string;
   }) => {
-    return request('/viewings/public-book', {
+    const res = await request('/viewings/public-book', {
       method: 'POST',
       body: JSON.stringify(data)
     });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viewflow:activity-updated'));
+    }
+    return res;
   },
   bookViewingPublic: async (data: {
     propertyId: string;
@@ -169,7 +181,7 @@ export const api = {
       scheduledDate = d.toISOString();
     }
 
-    return request('/viewings/public-book', {
+    const res = await request('/viewings/public-book', {
       method: 'POST',
       body: JSON.stringify({
         propertyId: data.propertyId,
@@ -181,12 +193,20 @@ export const api = {
         notes: data.notes || ''
       })
     });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viewflow:activity-updated'));
+    }
+    return res;
   },
   updateViewingStatus: async (id: string, status: string, feedback?: any, autoAdvanceLead?: boolean) => {
-    return request(`/viewings/${id}/status`, {
+    const res = await request(`/viewings/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status, feedback, autoAdvanceLead })
     });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('viewflow:activity-updated'));
+    }
+    return res;
   },
 
   // Tasks

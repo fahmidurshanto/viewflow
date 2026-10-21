@@ -45,9 +45,19 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
 
   useEffect(() => {
     fetchActivities();
-    // Poll every 30 seconds for live updates
+    
+    // Listen for instant local activity updates (e.g. stage changed, viewing booked, etc.)
+    const handleActivityUpdate = () => {
+      fetchActivities();
+    };
+    window.addEventListener('viewflow:activity-updated', handleActivityUpdate);
+
+    // Poll every 30 seconds for live background updates
     const interval = setInterval(fetchActivities, 30000);
-    return () => clearInterval(interval);
+    return () => {
+      window.removeEventListener('viewflow:activity-updated', handleActivityUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   // Close dropdown on outside click
