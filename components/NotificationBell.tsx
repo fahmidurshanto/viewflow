@@ -32,7 +32,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
       const res = await api.getActivities({ limit: 15 });
       if (res && Array.isArray(res.activities)) {
         setActivities(res.activities);
-        setUnreadCount(res.unreadCount || 0);
+        // Calculate unread count reliably: prefer server unreadCount, fallback to counting activities with isRead !== true
+        const localUnread = res.activities.filter((a: any) => a.isRead !== true).length;
+        setUnreadCount(typeof res.unreadCount === 'number' ? res.unreadCount : localUnread);
       }
     } catch (err) {
       console.error('Failed to load activities', err);
@@ -67,8 +69,28 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
       setUnreadCount(0);
       setActivities(prev => prev.map(a => ({ ...a, isRead: true })));
     } catch (err) {
-      console.error('Failed to mark read', err);
+      console.error('Failed to mark all read', err);
     }
+  };
+
+  const handleItemClick = async (act: ActivityLog) => {
+    // If not read yet, mark it read on server and update local state
+    if (!act.isRead) {
+      try {
+        api.markActivitiesRead([act._id]);
+        setUnreadCount(prev => Math.max(0, prev - 1));
+        setActivities(prev =>
+          prev.map(item => (item._id === act._id ? { ...item, isRead: true } : item))
+        );
+      } catch (err) {
+        console.error('Failed to mark single notification as read', err);
+      }
+    }
+
+    setIsOpen(false);
+    if (act.type.includes('Viewing')) onNavigateTab('calendar');
+    else if (act.type.includes('Stage')) onNavigateTab('pipeline');
+    else onNavigateTab('dashboard');
   };
 
   const getActivityIcon = (type: string) => {
@@ -89,20 +111,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (!isOpen && unreadCount > 0) {
-            handleMarkAllRead();
-          }
-        }}
+        onClick={() => setIsOpen(!isOpen)}
         type="button"
         className="relative p-2 rounded-xl text-slate-400 dark:text-slate-300 hover:text-white hover:bg-slate-800/80 dark:hover:bg-slate-800/80 transition-all cursor-pointer focus:outline-none notification-bell-btn group"
         title="View Notifications"
       >
         <Bell className="w-5 h-5 text-slate-500 dark:text-slate-300 group-hover:text-white transition-colors" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-blue-600 text-[10px] font-extrabold text-white shadow-lg shadow-blue-500/50 animate-pulse">
-            {unreadCount > 9 ? '9+' : unreadCount}
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-[18px] px-1 items-center justify-center rounded-full text-[10px] font-black text-white bg-blue-600 animate-pulse ring-2 ring-slate-900 shadow-lg shadow-blue-500/50">
+            {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
@@ -113,16 +130,24 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
           <div className="p-3.5 px-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/50">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-white">Notifications</span>
-              {unreadCount > 0 && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-blue-600/30 text-blue-400 font-semibold border border-blue-500/30">
-                  {unreadCount} new
+              {unreadCount > 0 ? (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-600/30 text-blue-400 font-bold border border-blue-500/30">
+                  {unreadCount} unread
+                </span>
+              ) : (
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium">
+                  All read
                 </span>
               )}
             </div>
-            {activities.length > 0 && (
+            {unreadCount > 0 && (
               <button
-                onClick={handleMarkAllRead}
-                className="text-xs text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                type="button"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  handleMarkAllRead();
+                }}
+                className="text-xs font-semibold text-blue-400 hover:text-white transition-colors cursor-pointer py-0.5 px-2 rounded-lg hover:bg-slate-800/60"
               >
                 Mark all read
               </button>
@@ -144,31 +169,34 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
                   key={act._id}
                   onMouseDown={(e) => {
                     e.stopPropagation();
-                    setIsOpen(false);
-                    if (act.type.includes('Viewing')) onNavigateTab('calendar');
-                    else if (act.type.includes('Stage')) onNavigateTab('pipeline');
-                    else onNavigateTab('dashboard');
+                    handleItemClick(act);
                   }}
-                  className={`p-3.5 px-4 hover:bg-slate-800/40 transition-colors cursor-pointer flex gap-3 items-start ${!act.isRead ? 'bg-blue-600/5' : ''
-                    }`}
+                  className={`p-3.5 px-4 hover:bg-slate-800/40 transition-colors cursor-pointer flex gap-3 items-start relative group/item ${
+                    !act.isRead ? 'bg-blue-600/10' : ''
+                  }`}
                 >
                   <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60 shrink-0 mt-0.5">
                     {getActivityIcon(act.type)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="text-xs font-semibold text-white truncate">
-                        {act.title || act.type}
-                      </p>
+                      <div className="flex items-center gap-1.5 truncate">
+                        {!act.isRead && (
+                          <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0 animate-ping" />
+                        )}
+                        <p className={`text-xs truncate ${!act.isRead ? 'font-bold text-white' : 'font-medium text-slate-300'}`}>
+                          {act.title || act.type}
+                        </p>
+                      </div>
                       <span className="text-[10px] text-slate-400 shrink-0">
                         {new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
+                    <p className={`text-[11px] line-clamp-2 leading-relaxed ${!act.isRead ? 'text-slate-200' : 'text-slate-400'}`}>
                       {act.note}
                     </p>
                     {act.lead && (
-                      <span className="inline-block mt-1 text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">
+                      <span className="inline-block mt-1 text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded font-medium">
                         Lead: {act.lead.name}
                       </span>
                     )}
