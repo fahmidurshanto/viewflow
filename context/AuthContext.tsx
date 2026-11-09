@@ -15,6 +15,8 @@ export interface AuthUser {
   subscriptionStatus?: 'active' | 'trial' | 'expired' | 'past_due';
   trialStartedAt?: string;
   trialEndsAt?: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
 }
 
 interface AuthContextType {

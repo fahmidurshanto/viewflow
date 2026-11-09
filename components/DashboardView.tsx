@@ -46,13 +46,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ data, onNavigateTa
     fetchRecent();
   }, []);
   const metrics = data?.metrics || {
-    totalProperties: 4,
-    availableProperties: 2,
-    soldProperties: 1,
-    totalLeads: 4,
-    totalViewings: 2,
+    totalProperties: 0,
+    availableProperties: 0,
+    soldProperties: 0,
+    totalLeads: 0,
+    totalViewings: 0,
     completedViewings: 0,
-    conversionRate: 50,
+    conversionRate: 0,
   };
 
   const statCards = [
@@ -93,13 +93,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ data, onNavigateTa
   return (
     <div className="space-y-8">
       {/* Top Banner / Welcome */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-blue-900/40 via-indigo-900/30 to-slate-900/40 border border-blue-500/20 backdrop-blur-md">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-slate-50/90 dark:from-blue-900/40 dark:via-indigo-900/30 dark:to-slate-900/40 border border-blue-200/80 dark:border-blue-500/20 backdrop-blur-md shadow-sm">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             Welcome back, Agent 👋
           </h2>
-          <p className="text-slate-400 text-sm mt-1">
-            You have <span className="text-blue-400 font-semibold">{metrics.totalViewings} upcoming viewings</span> and <span className="text-amber-400 font-semibold">{data?.pendingTasks?.length || 3} tasks</span> requiring action today.
+          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
+            You have <span className="text-blue-600 dark:text-blue-400 font-semibold">{metrics.totalViewings} upcoming viewings</span> and <span className="text-amber-600 dark:text-amber-400 font-semibold">{data?.pendingTasks?.length || 0} tasks</span> requiring action today.
           </p>
         </div>
         <div className="flex items-center gap-3">

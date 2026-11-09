@@ -22,6 +22,7 @@ export const PricingView: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'Starter' | 'Growth' | 'Enterprise'>('Growth');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [updatingSubscription, setUpdatingSubscription] = useState<boolean>(false);
+  const [openingPortal, setOpeningPortal] = useState<boolean>(false);
 
   const { isTrial, trialDaysLeft, isTrialExpired } = usePlanAccess();
 
@@ -34,39 +35,95 @@ export const PricingView: React.FC = () => {
     }
   }, [user]);
 
+  // Handle URL query parameters after Stripe checkout return
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const isSuccess = params.get('success') === 'true';
+      const sessionId = params.get('session_id');
+
+      if (isSuccess && sessionId) {
+        // Clean URL immediately
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        // Immediately verify session with Stripe backend
+        api.verifyCheckoutSession(sessionId).then((res) => {
+          if (res && res.success && res.plan) {
+            setSelectedPlan(res.plan);
+            if (res.billingCycle) setBillingCycle(res.billingCycle);
+            if (updateUser) {
+              updateUser({
+                subscriptionPlan: res.plan,
+                subscriptionBillingCycle: res.billingCycle || 'monthly',
+                subscriptionStatus: 'active',
+                stripeCustomerId: res.user?.stripeCustomerId
+              });
+            }
+            toast.success(`🎉 Payment verified! Your ${res.plan} Plan is now active!`);
+          } else {
+            toast.success('Payment received! Subscription updating...');
+          }
+        }).catch((err) => {
+          console.error('Error verifying checkout session:', err);
+        });
+      } else if (params.get('canceled') === 'true') {
+        toast.info('Checkout canceled. Your subscription plan was not changed.');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  }, []);
+
   const handleUpdatePlan = async (plan: 'Starter' | 'Growth' | 'Enterprise') => {
     setUpdatingSubscription(true);
     try {
-      const res = await api.updateSubscription({ plan, billingCycle });
-      if (res && res.success) {
-        setSelectedPlan(plan);
-        if (updateUser) {
-          updateUser({ subscriptionPlan: plan, subscriptionBillingCycle: billingCycle });
-        }
-        toast.success(`Plan updated to ${plan} (${billingCycle})!`);
-      } else {
-        toast.error(res?.error || 'Failed to update plan');
+      // 1. First try creating Stripe Checkout Session
+      const res = await api.createCheckoutSession({ plan, billingCycle });
+      if (res && res.success && res.url) {
+        toast.info('Redirecting to Stripe secure checkout...');
+        window.location.href = res.url;
+        return;
       }
+
+      // 2. If Stripe keys are not yet configured on server, fallback to instant update with notification
+      if (res && res.error && res.error.includes('Stripe Secret Key')) {
+        toast.info('Stripe key is in setup mode: activating plan directly for testing...');
+        const directRes = await api.updateSubscription({ plan, billingCycle });
+        if (directRes && directRes.success) {
+          setSelectedPlan(plan);
+          if (updateUser) {
+            updateUser({ subscriptionPlan: plan, subscriptionBillingCycle: billingCycle });
+          }
+          toast.success(`Plan updated to ${plan} (${billingCycle})!`);
+          return;
+        }
+      }
+
+      toast.error(res?.error || 'Failed to initialize Stripe checkout');
     } catch (err: any) {
-      toast.error(err.message || 'Error updating subscription');
+      toast.error(err.message || 'Error processing checkout');
     } finally {
       setUpdatingSubscription(false);
     }
   };
 
-  const handleToggleCycle = async (cycle: 'monthly' | 'yearly') => {
-    setBillingCycle(cycle);
+  const handleOpenBillingPortal = async () => {
+    setOpeningPortal(true);
     try {
-      const res = await api.updateSubscription({ plan: selectedPlan, billingCycle: cycle });
-      if (res && res.success) {
-        if (updateUser) {
-          updateUser({ subscriptionBillingCycle: cycle });
-        }
-        toast.success(`Switched to ${cycle} billing!`);
+      const res = await api.createPortalSession();
+      if (res && res.success && res.url) {
+        window.location.href = res.url;
+      } else {
+        toast.error(res?.error || 'Unable to open billing portal');
       }
     } catch (err: any) {
-      console.error(err);
+      toast.error(err.message || 'Error opening billing portal');
+    } finally {
+      setOpeningPortal(false);
     }
+  };
+
+  const handleToggleCycle = (cycle: 'monthly' | 'yearly') => {
+    setBillingCycle(cycle);
   };
 
   return (
@@ -144,9 +201,22 @@ export const PricingView: React.FC = () => {
             </p>
           </div>
         </div>
-        <div className="text-xs text-slate-400 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>PCI-DSS Compliant Encryption</span>
+        <div className="flex items-center gap-3">
+          {user?.stripeCustomerId && (
+            <button
+              type="button"
+              onClick={handleOpenBillingPortal}
+              disabled={openingPortal}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <Receipt className="w-3.5 h-3.5 text-blue-400" />
+              <span>{openingPortal ? 'Opening Portal...' : 'Manage Invoices & Cards'}</span>
+            </button>
+          )}
+          <div className="text-xs text-slate-400 flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Stripe PCI-DSS</span>
+          </div>
         </div>
       </div>
 

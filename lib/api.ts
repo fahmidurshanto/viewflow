@@ -281,6 +281,25 @@ export const api = {
     });
   },
 
+  // Stripe Payment & Subscription
+  createCheckoutSession: async (data: { plan: 'Starter' | 'Growth' | 'Enterprise'; billingCycle: 'monthly' | 'yearly' }) => {
+    return request('/payment/create-checkout-session', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+  createPortalSession: async () => {
+    return request('/payment/create-portal-session', {
+      method: 'POST'
+    });
+  },
+  verifyCheckoutSession: async (sessionId: string) => {
+    return request('/payment/verify-session', {
+      method: 'POST',
+      body: JSON.stringify({ sessionId })
+    });
+  },
+
   // Reset Demo Data
   resetDemoData: async () => {
     return request('/analytics/reset-demo', {
