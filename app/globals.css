@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
+
 /* -------------------------------------------------------------
    THEME STYLES (Robust data-theme and .light selector support)
 ---------------------------------------------------------------- */
@@ -284,6 +286,55 @@ html.light .viewflow-root,
   .whatsapp-preview-time,
   .whatsapp-preview-time * {
     color: #6ee7b7 !important;
+  }
+
+  /* Modal & Dialog High-Priority Light Mode Rules */
+  .fixed.inset-0 .bg-slate-900,
+  .fixed.inset-0 .dark\:bg-slate-900,
+  div[role="dialog"] .bg-slate-900,
+  .glass-card {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
+
+  /* Modal Inputs, Textareas, Selects in Light Mode */
+  .fixed.inset-0 input:not([type="checkbox"]):not([type="radio"]),
+  .fixed.inset-0 select,
+  .fixed.inset-0 textarea,
+  div[role="dialog"] input,
+  div[role="dialog"] select,
+  div[role="dialog"] textarea {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  .fixed.inset-0 input::placeholder,
+  .fixed.inset-0 textarea::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Modal Headings and Labels */
+  .fixed.inset-0 h2,
+  .fixed.inset-0 h3,
+  .fixed.inset-0 h4,
+  div[role="dialog"] h2,
+  div[role="dialog"] h3,
+  div[role="dialog"] h4 {
+    color: #0f172a !important;
+  }
+
+  .fixed.inset-0 label,
+  div[role="dialog"] label {
+    color: #475569 !important;
+  }
+
+  /* Modal backdrop in light mode */
+  .fixed.inset-0.bg-black\/70,
+  .fixed.inset-0.bg-black\/75,
+  .fixed.inset-0.bg-black\/60 {
+    background-color: rgba(15, 23, 42, 0.45) !important;
   }
 }
 

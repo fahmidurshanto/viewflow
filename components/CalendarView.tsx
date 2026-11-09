@@ -497,30 +497,30 @@ Please let me know if you need any directions or have questions prior to our vis
 
       {/* Book Viewing Modal */}
       {showBookModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-lg text-white">Book Property Viewing</h3>
-              <button onClick={() => setShowBookModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Book Property Viewing</h3>
+              <button onClick={() => setShowBookModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {conflictError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300">
-                <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-600 dark:text-rose-300">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-rose-500 dark:text-rose-400 mt-0.5" />
                 <span>{conflictError}</span>
               </div>
             )}
 
             <form onSubmit={handleBookViewing} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Select Property</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Select Property</label>
                 <select
                   required
                   value={selectedPropertyId}
                   onChange={(e) => setSelectedPropertyId(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 >
                   <option value="">-- Choose Property --</option>
                   {properties.map((p) => (
@@ -532,12 +532,12 @@ Please let me know if you need any directions or have questions prior to our vis
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Select Client (Lead)</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Select Client (Lead)</label>
                 <select
                   required
                   value={selectedLeadId}
                   onChange={(e) => setSelectedLeadId(e.target.value)}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 >
                   <option value="">-- Choose Lead --</option>
                   {leads.map((l) => (
@@ -550,33 +550,33 @@ Please let me know if you need any directions or have questions prior to our vis
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Date</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Date</label>
                   <input
                     type="date"
                     required
                     value={dateStr}
                     onChange={(e) => setDateStr(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Time</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Time</label>
                   <input
                     type="time"
                     required
                     value={timeStr}
                     onChange={(e) => setTimeStr(e.target.value)}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Duration</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Duration</label>
                 <select
                   value={durationMinutes}
                   onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 >
                   <option value={30}>30 Minutes</option>
                   <option value={45}>45 Minutes (Standard)</option>
@@ -586,15 +586,15 @@ Please let me know if you need any directions or have questions prior to our vis
               </div>
 
               {/* Real-time Occupied Slots Indicator */}
-              <div className="rounded-xl bg-slate-800/50 border border-slate-700/60 p-3 space-y-1.5">
-                <div className="text-[11px] font-semibold text-slate-300 flex items-center justify-between">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 p-3 space-y-1.5">
+                <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 flex items-center justify-between">
                   <span>Existing Bookings on {dateStr || 'Selected Date'}:</span>
                   {checkingAvailability && (
-                    <span className="text-blue-400 text-[10px] animate-pulse">Checking slots...</span>
+                    <span className="text-blue-600 dark:text-blue-400 text-[10px] animate-pulse">Checking slots...</span>
                   )}
                 </div>
                 {occupiedSlots.length === 0 ? (
-                  <div className="text-[11px] text-emerald-400 flex items-center gap-1.5">
+                  <div className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5" /> All day open for this property
                   </div>
                 ) : (
@@ -602,7 +602,7 @@ Please let me know if you need any directions or have questions prior to our vis
                     {occupiedSlots.map((slot, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium"
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 font-medium"
                       >
                         Booked: {slot.timeString} ({slot.durationMinutes}m)
                       </span>
@@ -611,17 +611,17 @@ Please let me know if you need any directions or have questions prior to our vis
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowBookModal(false)}
-                  className="px-4 py-2 text-sm text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
                 >
                   Confirm Slot
                 </button>
@@ -633,21 +633,21 @@ Please let me know if you need any directions or have questions prior to our vis
 
       {/* Post-Viewing Feedback Collection Modal */}
       {feedbackViewing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="glass-panel w-full max-w-md p-6 rounded-2xl border border-slate-700/80 shadow-2xl relative">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md p-6 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400">
                   <Star className="w-5 h-5 fill-amber-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Viewing Feedback</h3>
-                  <p className="text-xs text-slate-400">Log tour impressions & client offer intention</p>
+                  <h3 className="font-bold text-lg text-slate-900 dark:text-white">Viewing Feedback</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Log tour impressions & client offer intention</p>
                 </div>
               </div>
               <button
                 onClick={() => setFeedbackViewing(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -655,18 +655,18 @@ Please let me know if you need any directions or have questions prior to our vis
 
             <form onSubmit={handleSubmitFeedback} className="mt-4 space-y-4">
               {/* Viewing Brief Summary */}
-              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs space-y-1">
-                <div className="text-slate-300 font-semibold truncate">
-                  Property: <span className="text-white">{feedbackViewing.property?.title}</span>
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs space-y-1">
+                <div className="text-slate-600 dark:text-slate-300 font-semibold truncate">
+                  Property: <span className="text-slate-900 dark:text-white">{feedbackViewing.property?.title}</span>
                 </div>
-                <div className="text-slate-400">
-                  Client: <span className="text-blue-400 font-medium">{feedbackViewing.lead?.name}</span> ({feedbackViewing.lead?.email})
+                <div className="text-slate-500 dark:text-slate-400">
+                  Client: <span className="text-blue-600 dark:text-blue-400 font-medium">{feedbackViewing.lead?.name}</span> ({feedbackViewing.lead?.email})
                 </div>
               </div>
 
               {/* 1-5 Star Rating */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Client Interest Rating (1 to 5)
                 </label>
                 <div className="flex items-center gap-2">
@@ -677,14 +677,14 @@ Please let me know if you need any directions or have questions prior to our vis
                       onClick={() => setFeedbackRating(star)}
                       className={`p-2 rounded-xl border transition-all cursor-pointer ${
                         feedbackRating >= star
-                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 scale-105'
-                          : 'bg-slate-800/60 border-slate-700 text-slate-500 hover:text-slate-400'
+                          ? 'bg-amber-500/20 border-amber-500/40 text-amber-500 dark:text-amber-400 scale-105'
+                          : 'bg-slate-100 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400'
                       }`}
                     >
                       <Star className={`w-5 h-5 ${feedbackRating >= star ? 'fill-amber-400' : ''}`} />
                     </button>
                   ))}
-                  <span className="text-xs font-bold text-slate-300 ml-2">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-2">
                     {feedbackRating === 5 ? '🤩 Loved it!' :
                      feedbackRating === 4 ? '😊 Very Interested' :
                      feedbackRating === 3 ? '😐 Neutral / Thinking' :
@@ -695,7 +695,7 @@ Please let me know if you need any directions or have questions prior to our vis
 
               {/* Comments / Notes */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Tour Notes & Impressions
                 </label>
                 <textarea
@@ -703,32 +703,32 @@ Please let me know if you need any directions or have questions prior to our vis
                   value={feedbackComments}
                   onChange={(e) => setFeedbackComments(e.target.value)}
                   placeholder="e.g. Liked the open kitchen layout, concerned about parking space..."
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
               </div>
 
               {/* Offer Intention Toggle */}
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-2">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800/80 space-y-2">
                 <label className="flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-white">Client intends to make an offer?</span>
+                    <span className="text-xs font-semibold text-slate-900 dark:text-white">Client intends to make an offer?</span>
                   </div>
                   <input
                     type="checkbox"
                     checked={feedbackOfferInterest}
                     onChange={(e) => setFeedbackOfferInterest(e.target.checked)}
-                    className="w-4 h-4 rounded text-blue-600 focus:ring-0 bg-slate-800 border-slate-700 cursor-pointer"
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-0 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 cursor-pointer"
                   />
                 </label>
 
                 {feedbackOfferInterest && (
-                  <div className="pt-2 border-t border-slate-800/60">
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-blue-400">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800/60">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-blue-600 dark:text-blue-400 font-medium">
                       <input
                         type="checkbox"
                         checked={feedbackAutoAdvance}
                         onChange={(e) => setFeedbackAutoAdvance(e.target.checked)}
-                        className="w-3.5 h-3.5 rounded text-blue-600 focus:ring-0 bg-slate-800 border-slate-700 cursor-pointer"
+                        className="w-3.5 h-3.5 rounded text-blue-600 focus:ring-0 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 cursor-pointer"
                       />
                       <span>Auto-advance lead to <strong>"Offer"</strong> stage in Pipeline</span>
                     </label>
@@ -736,18 +736,18 @@ Please let me know if you need any directions or have questions prior to our vis
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setFeedbackViewing(null)}
-                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingFeedback}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50 active:scale-[0.98]"
                 >
                   {submittingFeedback ? (
                     <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />

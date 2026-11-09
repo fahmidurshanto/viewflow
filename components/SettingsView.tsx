@@ -180,8 +180,6 @@ If you need to reschedule or have any questions ahead of time, please reply dire
     fetchSettings();
   }, []);
 
-  const [resettingDemo, setResettingDemo] = useState<boolean>(false);
-
   // Save Settings
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,29 +194,6 @@ If you need to reschedule or have any questions ahead of time, please reply dire
       toast.error(err.message || 'Failed to save settings');
     } finally {
       setSaving(false);
-    }
-  };
-
-  // Reset Demo Data
-  const handleResetDemo = async () => {
-    if (!confirm('Are you sure you want to reset demo data? This will restore clean sample properties, leads, tasks, and viewings.')) {
-      return;
-    }
-    setResettingDemo(true);
-    try {
-      const res = await api.resetDemoData();
-      if (res && !res.error) {
-        toast.success('Demo data restored successfully!');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1200);
-      } else {
-        toast.error(res?.error || 'Failed to reset demo data');
-      }
-    } catch (err: any) {
-      toast.error(err.message || 'Error resetting demo data');
-    } finally {
-      setResettingDemo(false);
     }
   };
 
@@ -790,34 +765,6 @@ _Booked via ${config.agencyName || 'ViewFlow Premier Real Estate'}_`
           </button>
         </div>
       </form>
-
-      {/* Demo Reset Card (Phase 6 Polish) */}
-      <div className="mt-8 p-6 rounded-2xl bg-rose-500/5 border border-rose-500/20 backdrop-blur-md">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-rose-400 font-semibold text-sm">
-              <AlertTriangle className="w-4 h-4" />
-              Demo Data & Showcase Environment
-            </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-xl">
-              Testing or demonstrating the platform to clients? Reset your database back to fresh sample properties, realistic leads, appointments, and pipeline stages in one click.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={handleResetDemo}
-            disabled={resettingDemo}
-            className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer active:scale-95 disabled:opacity-50 whitespace-nowrap"
-          >
-            {resettingDemo ? (
-              <div className="w-3.5 h-3.5 border-2 border-rose-300 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <RotateCcw className="w-3.5 h-3.5" />
-            )}
-            {resettingDemo ? 'Resetting Demo...' : 'Reset Demo Data'}
-          </button>
-        </div>
-      </div>
 
       {/* Upgrade Modal */}
       <UpgradeModal

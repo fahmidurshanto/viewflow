@@ -12,7 +12,9 @@ import {
   CalendarDays, 
   CheckSquare2, 
   Settings,
-  CreditCard
+  CreditCard,
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { DashboardView } from '@/components/DashboardView';
@@ -45,9 +47,12 @@ function MainApp() {
   const [viewings, setViewings] = useState<Viewing[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  const [connectionError, setConnectionError] = useState<string | null>(null);
+
   const fetchData = async () => {
     try {
       setLoading(true);
+      setConnectionError(null);
       const [analyticsData, propertiesData, leadsData, viewingsData, tasksData] = await Promise.allSettled([
         api.getAnalytics(),
         api.getProperties(),
@@ -55,6 +60,16 @@ function MainApp() {
         api.getViewings(),
         api.getTasks()
       ]);
+
+      const hasDbFailure = [analyticsData, propertiesData, leadsData, viewingsData, tasksData].some((res) => {
+        if (res.status === 'rejected') return true;
+        if (res.status === 'fulfilled' && (res.value?.error || res.value?.message?.includes('failed') || res.value?.code === 'ECONNREFUSED')) return true;
+        return false;
+      });
+
+      if (hasDbFailure && propertiesData.status === 'fulfilled' && propertiesData.value?.error) {
+        setConnectionError(propertiesData.value.error || 'Database connection error');
+      }
 
       if (analyticsData.status === 'fulfilled' && !analyticsData.value.error) {
         setAnalytics(analyticsData.value);
@@ -71,8 +86,9 @@ function MainApp() {
       if (tasksData.status === 'fulfilled' && Array.isArray(tasksData.value)) {
         setTasks(tasksData.value);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch data:', err);
+      setConnectionError(err?.message || 'Failed to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -177,6 +193,26 @@ function MainApp() {
             <NotificationBell onNavigateTab={setActiveTab} />
           </div>
         </div>
+
+        {/* Database Connection Alert Banner */}
+        {connectionError && (
+          <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-rose-200">Database Connection Issue</p>
+                <p className="text-xs text-rose-400/90">{connectionError}. Please ensure MongoDB is active and reachable.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => fetchData()}
+              className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-medium flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Retry</span>
+            </button>
+          </div>
+        )}
 
         {loading && !analytics && (
           <div className="flex items-center justify-center py-24">

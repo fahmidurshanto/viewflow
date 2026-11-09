@@ -562,69 +562,69 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
       {/* ==================== 1. ADD PROPERTY MODAL ==================== */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-lg text-white">Add New Property</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Add New Property</h3>
+              <button onClick={() => setShowAddModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Modern Sunset Penthouse"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Price ($)</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Price ($)</label>
                   <input
                     type="number"
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">City</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">City</label>
                   <input
                     type="text"
                     required
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Listing Type</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Listing Type</label>
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Sale">Sale</option>
                     <option value="Rent">Rent</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Available">Available</option>
                     <option value="Under Offer">Under Offer</option>
@@ -632,11 +632,11 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Property Type</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Property Type</label>
                   <select
                     value={formData.propertyType}
                     onChange={(e) => setFormData({ ...formData, propertyType: e.target.value as any })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Apartment">Apartment</option>
                     <option value="House">House</option>
@@ -649,37 +649,37 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Bedrooms</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Bedrooms</label>
                   <input
                     type="number"
                     value={formData.bedrooms}
                     onChange={(e) => setFormData({ ...formData, bedrooms: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Bathrooms</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Bathrooms</label>
                   <input
                     type="number"
                     value={formData.bathrooms}
                     onChange={(e) => setFormData({ ...formData, bathrooms: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">SqFt</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">SqFt</label>
                   <input
                     type="number"
                     value={formData.areaSqFt}
                     onChange={(e) => setFormData({ ...formData, areaSqFt: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               {/* Photo Upload Zone */}
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Property Photos</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">Property Photos</label>
                 <div
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -705,7 +705,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                       setUploading(false);
                     }
                   }}
-                  className="border-2 border-dashed border-slate-700 hover:border-blue-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-800/40 relative"
+                  className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-50 dark:bg-slate-800/40 relative"
                 >
                   <input
                     type="file"
@@ -734,14 +734,14 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                     className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                   />
                   {uploading ? (
-                    <div className="flex items-center justify-center gap-2 text-xs text-blue-400 font-medium py-1">
-                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center justify-center gap-2 text-xs text-blue-500 dark:text-blue-400 font-medium py-1">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                       <span>Uploading to media server...</span>
                     </div>
                   ) : (
                     <>
-                      <div className="text-xs text-slate-300 font-medium">
-                        Drag & Drop photos here or <span className="text-blue-400 underline">Browse files</span>
+                      <div className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                        Drag & Drop photos here or <span className="text-blue-600 dark:text-blue-400 underline">Browse files</span>
                       </div>
                       <div className="text-[10px] text-slate-500 mt-1">
                         High-resolution JPG, PNG, WEBP, AVIF (Up to 10MB each)
@@ -754,7 +754,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                 {formData.images.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2.5">
                     {formData.images.map((img, idx) => (
-                      <div key={idx} className="relative group w-16 h-14 rounded-lg overflow-hidden border border-slate-700 bg-slate-800">
+                      <div key={idx} className="relative group w-16 h-14 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
                         <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -774,18 +774,18 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
+                  className="px-4 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white text-sm transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-blue-600/30"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
                 >
                   {isSubmitting ? 'Saving...' : 'Save Property'}
                 </button>
@@ -797,71 +797,71 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
       {/* ==================== 2. EDIT PROPERTY MODAL ==================== */}
       {editingProperty && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Edit2 className="w-4 h-4 text-blue-400" />
-                <h3 className="font-bold text-lg text-white">Edit Property</h3>
+                <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Edit Property</h3>
               </div>
-              <button onClick={() => setEditingProperty(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setEditingProperty(null)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Title</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Title</label>
                 <input
                   type="text"
                   required
                   value={editFormData.title}
                   onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Price ($)</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Price ($)</label>
                   <input
                     type="number"
                     required
                     value={editFormData.price}
                     onChange={(e) => setEditFormData({ ...editFormData, price: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">City</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">City</label>
                   <input
                     type="text"
                     required
                     value={editFormData.city}
                     onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Listing Type</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Listing Type</label>
                   <select
                     value={editFormData.type}
                     onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value as any })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Sale">Sale</option>
                     <option value="Rent">Rent</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Status</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Status</label>
                   <select
                     value={editFormData.status}
                     onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value as any })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Available">Available</option>
                     <option value="Under Offer">Under Offer</option>
@@ -869,11 +869,11 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Property Type</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Property Type</label>
                   <select
                     value={editFormData.propertyType}
                     onChange={(e) => setEditFormData({ ...editFormData, propertyType: e.target.value as any })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Apartment">Apartment</option>
                     <option value="House">House</option>
@@ -886,38 +886,38 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Bedrooms</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Bedrooms</label>
                   <input
                     type="number"
                     value={editFormData.bedrooms}
                     onChange={(e) => setEditFormData({ ...editFormData, bedrooms: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Bathrooms</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Bathrooms</label>
                   <input
                     type="number"
                     value={editFormData.bathrooms}
                     onChange={(e) => setEditFormData({ ...editFormData, bathrooms: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">SqFt</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">SqFt</label>
                   <input
                     type="number"
                     value={editFormData.areaSqFt}
                     onChange={(e) => setEditFormData({ ...editFormData, areaSqFt: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               {/* Photos Edit Zone */}
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-2">Manage Photos</label>
-                <div className="border-2 border-dashed border-slate-700 hover:border-blue-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-800/40 relative">
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">Manage Photos</label>
+                <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-500/50 rounded-xl p-4 text-center cursor-pointer transition-colors bg-slate-50 dark:bg-slate-800/40 relative">
                   <input
                     type="file"
                     accept="image/*"
@@ -945,13 +945,13 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                     className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                   />
                   {uploading ? (
-                    <div className="flex items-center justify-center gap-2 text-xs text-blue-400 font-medium py-1">
-                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center justify-center gap-2 text-xs text-blue-500 dark:text-blue-400 font-medium py-1">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
                       <span>Uploading new photos...</span>
                     </div>
                   ) : (
-                    <div className="text-xs text-slate-300 font-medium">
-                      + Add more photos <span className="text-blue-400 underline">Browse</span>
+                    <div className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                      + Add more photos <span className="text-blue-600 dark:text-blue-400 underline">Browse</span>
                     </div>
                   )}
                 </div>
@@ -960,7 +960,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                 {editFormData.images.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2.5">
                     {editFormData.images.map((img, idx) => (
-                      <div key={idx} className="relative group w-16 h-14 rounded-lg overflow-hidden border border-slate-700 bg-slate-800">
+                      <div key={idx} className="relative group w-16 h-14 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
                         <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />
                         <button
                           type="button"
@@ -980,18 +980,18 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditingProperty(null)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
+                  className="px-4 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white text-sm transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-blue-600/30"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
                 >
                   {isSubmitting ? 'Updating...' : 'Save Changes'}
                 </button>
@@ -1003,28 +1003,28 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
       {/* ==================== 3. DELETE CONFIRMATION MODAL ==================== */}
       {deletingProperty && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-3 text-rose-500">
-              <div className="p-3 bg-rose-500/10 rounded-xl border border-rose-500/20">
+              <div className="p-3 bg-rose-50 dark:bg-rose-500/10 rounded-xl border border-rose-200 dark:border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-white">Delete Property?</h3>
-                <p className="text-xs text-slate-400">This action cannot be undone.</p>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-white">Delete Property?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">This action cannot be undone.</p>
               </div>
             </div>
 
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-600 dark:text-slate-300">
               Are you sure you want to permanently delete{' '}
-              <span className="font-semibold text-white">"{deletingProperty.title}"</span>? All booking links and associated viewing data will be removed.
+              <span className="font-semibold text-slate-900 dark:text-white">"{deletingProperty.title}"</span>? All booking links and associated viewing data will be removed.
             </p>
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setDeletingProperty(null)}
-                className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-sm"
+                className="px-4 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white text-sm transition-colors"
               >
                 Cancel
               </button>
@@ -1032,7 +1032,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                 type="button"
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-rose-600/30"
+                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-rose-600/30 transition-all active:scale-[0.98]"
               >
                 {isSubmitting ? 'Deleting...' : 'Confirm Delete'}
               </button>
@@ -1043,29 +1043,29 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
 
       {/* ==================== 4. FULL DETAILS DRAWER / MODAL ==================== */}
       {viewingDetailsProperty && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-2xl rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${
                     viewingDetailsProperty.status === 'Available'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30'
+                      : 'bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30'
                   }`}>
                     {viewingDetailsProperty.status}
                   </span>
-                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30">
                     {viewingDetailsProperty.type}
                   </span>
                 </div>
-                <h3 className="font-bold text-xl text-white">{viewingDetailsProperty.title}</h3>
-                <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
-                  <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                <h3 className="font-bold text-xl text-slate-900 dark:text-white">{viewingDetailsProperty.title}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
                   {viewingDetailsProperty.address?.street}, {viewingDetailsProperty.address?.city}, {viewingDetailsProperty.address?.state || 'USA'}
                 </p>
               </div>
-              <button onClick={() => setViewingDetailsProperty(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setViewingDetailsProperty(null)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1074,48 +1074,48 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
             {viewingDetailsProperty.images && viewingDetailsProperty.images.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {viewingDetailsProperty.images.map((img, i) => (
-                  <div key={i} className="h-28 rounded-xl overflow-hidden border border-slate-800 bg-slate-800">
+                  <div key={i} className="h-28 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
                     <img src={img} alt="Property" className="w-full h-full object-cover" />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="h-40 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-500 text-xs border border-slate-800">
+              <div className="h-40 rounded-xl bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs border border-slate-200 dark:border-slate-800">
                 No photos uploaded for this property
               </div>
             )}
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-800/40 p-4 rounded-xl border border-slate-800">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
               <div>
                 <span className="text-[11px] text-slate-500 block">Listing Price</span>
-                <span className="text-lg font-bold text-white">${viewingDetailsProperty.price?.toLocaleString()}</span>
+                <span className="text-lg font-bold text-slate-900 dark:text-white">${viewingDetailsProperty.price?.toLocaleString()}</span>
               </div>
               <div>
                 <span className="text-[11px] text-slate-500 block">Type</span>
-                <span className="text-sm font-semibold text-slate-200">{viewingDetailsProperty.propertyType}</span>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{viewingDetailsProperty.propertyType}</span>
               </div>
               <div>
                 <span className="text-[11px] text-slate-500 block">Bedrooms / Baths</span>
-                <span className="text-sm font-semibold text-slate-200">
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   {viewingDetailsProperty.specs?.bedrooms} Beds / {viewingDetailsProperty.specs?.bathrooms} Baths
                 </span>
               </div>
               <div>
                 <span className="text-[11px] text-slate-500 block">Area</span>
-                <span className="text-sm font-semibold text-slate-200">{viewingDetailsProperty.specs?.areaSqFt} sqft</span>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{viewingDetailsProperty.specs?.areaSqFt} sqft</span>
               </div>
             </div>
 
             {/* Booking Link Bar */}
-            <div className="p-3.5 bg-blue-950/30 border border-blue-900/50 rounded-xl flex items-center justify-between gap-3">
+            <div className="p-3.5 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-xl flex items-center justify-between gap-3">
               <div className="text-xs">
-                <div className="font-semibold text-blue-300">Public Booking Link</div>
-                <div className="text-slate-400 text-[11px]">Share this direct link with clients to book self-serve viewing slots.</div>
+                <div className="font-semibold text-blue-700 dark:text-blue-300">Public Booking Link</div>
+                <div className="text-slate-500 dark:text-slate-400 text-[11px]">Share this direct link with clients to book self-serve viewing slots.</div>
               </div>
               <button
                 onClick={() => handleCopyBookingLink(viewingDetailsProperty._id)}
-                className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/20"
+                className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs flex items-center gap-1.5 shadow-md shadow-blue-600/20 transition-all active:scale-95"
               >
                 {copiedId === viewingDetailsProperty._id ? (
                   <>
@@ -1130,7 +1130,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
             </div>
 
             {/* Footer Action Buttons */}
-            <div className="flex justify-between items-center pt-3 border-t border-slate-800">
+            <div className="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => {
@@ -1138,7 +1138,7 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                   setViewingDetailsProperty(null);
                   setDeletingProperty(prop);
                 }}
-                className="px-4 py-2 rounded-xl text-rose-400 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-4 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Delete Property
               </button>
@@ -1150,14 +1150,14 @@ export const PropertiesView: React.FC<PropertiesViewProps> = ({ properties, onRe
                     setViewingDetailsProperty(null);
                     handleOpenEdit(prop);
                   }}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 >
                   <Edit2 className="w-3.5 h-3.5" /> Edit Property
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewingDetailsProperty(null)}
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-all active:scale-95"
                 >
                   Done
                 </button>

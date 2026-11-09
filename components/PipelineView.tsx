@@ -462,46 +462,46 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
 
       {/* Lead Details & History Drawer */}
       {selectedLead && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border-l border-slate-800 w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 w-full max-w-md h-full p-6 shadow-2xl flex flex-col justify-between overflow-y-auto">
             <div>
               {/* Drawer Top Header */}
-              <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-white tracking-tight">{selectedLead.name}</h3>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">{selectedLead.name}</h3>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
                       {selectedLead.source}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     Lead ID: #{selectedLead._id.slice(-6)}
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedLead(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Contact Info Card */}
-              <div className="py-4 space-y-2.5 border-b border-slate-800 text-xs">
-                <div className="flex items-center gap-3 text-slate-300">
-                  <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">
+              <div className="py-4 space-y-2.5 border-b border-slate-100 dark:border-slate-800 text-xs">
+                <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                  <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
                     <Phone className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium">{selectedLead.phone}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300">
-                  <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
+                <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                  <div className="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <Mail className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium">{selectedLead.email}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300">
-                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
+                  <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     <DollarSign className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium">Budget: ${selectedLead.budget?.toLocaleString() || 'N/A'}</span>
@@ -512,42 +512,42 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
               <div className="py-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <History className="w-4 h-4 text-blue-400" />
-                    <h4 className="font-bold text-xs uppercase tracking-wider text-slate-200">Interaction History</h4>
+                    <History className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-200">Interaction History</h4>
                   </div>
-                  <span className="text-[11px] text-slate-500 font-medium">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
                     {leadActivities.length} Records
                   </span>
                 </div>
 
                 <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                   {leadActivities.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-slate-500 rounded-xl bg-slate-900/60 border border-slate-800">
+                    <div className="p-6 text-center text-xs text-slate-500 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
                       No notes recorded yet. Log the first call or email below.
                     </div>
                   ) : (
                     leadActivities.map((act) => (
                       <div 
                         key={act._id} 
-                        className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-1.5"
+                        className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-1.5"
                       >
                         <div className="flex items-center justify-between text-[11px]">
                           <span className={`font-semibold px-2 py-0.5 rounded ${
                             act.type === 'Call'
-                              ? 'bg-blue-500/10 text-blue-400'
+                              ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400'
                               : act.type === 'Email'
-                              ? 'bg-purple-500/10 text-purple-400'
+                              ? 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400'
                               : act.type === 'Stage Changed'
-                              ? 'bg-amber-500/10 text-amber-400'
-                              : 'bg-slate-700/60 text-slate-300'
+                              ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                              : 'bg-slate-200 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300'
                           }`}>
                             {act.type}
                           </span>
-                          <span className="text-slate-500">
+                          <span className="text-slate-400 dark:text-slate-500">
                             {new Date(act.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">{act.note}</p>
+                        <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{act.note}</p>
                       </div>
                     ))
                   )}
@@ -556,7 +556,7 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
             </div>
 
             {/* Log Note / Activity Input */}
-            <form onSubmit={handleAddNote} className="pt-4 border-t border-slate-800 space-y-2">
+            <form onSubmit={handleAddNote} className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 {['Call', 'Email', 'Viewing Note', 'General'].map((t) => (
                   <button
@@ -566,7 +566,7 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
                     className={`text-[10px] px-2.5 py-1 rounded-lg font-medium transition-colors ${
                       noteType === t
                         ? 'bg-blue-600 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     {t}
@@ -579,11 +579,11 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
                   placeholder={`Log details for ${noteType}...`}
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
-                  className="flex-1 bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                  className="flex-1 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   Log
@@ -596,67 +596,67 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
 
       {/* Add Lead Modal */}
       {showAddLeadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="font-bold text-lg text-white">Add New Prospect</h3>
-              <button onClick={() => setShowAddLeadModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 dark:bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white">Add New Prospect</h3>
+              <button onClick={() => setShowAddLeadModal(false)} className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateLead} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={newLeadForm.name}
                   onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
                   placeholder="e.g. Michael Scott"
-                  className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Email</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email</label>
                   <input
                     type="email"
                     required
                     value={newLeadForm.email}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Phone</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Phone</label>
                   <input
                     type="text"
                     required
                     value={newLeadForm.phone}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Budget ($)</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Budget ($)</label>
                   <input
                     type="number"
                     value={newLeadForm.budget}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, budget: Number(e.target.value) })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1">Source</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Source</label>
                   <select
                     value={newLeadForm.source}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, source: e.target.value })}
-                    className="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   >
                     <option value="Website">Website</option>
                     <option value="Portal">Portal</option>
@@ -667,17 +667,17 @@ export const PipelineView: React.FC<PipelineViewProps> = ({ leads, onRefresh, ap
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddLeadModal(false)}
-                  className="px-4 py-2 text-sm text-slate-400 hover:text-white"
+                  className="px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-lg shadow-blue-600/30 transition-all active:scale-[0.98]"
                 >
                   Save Lead
                 </button>
