@@ -24,6 +24,7 @@ import { CalendarView } from '@/components/CalendarView';
 import { TasksView } from '@/components/TasksView';
 import { SettingsView } from '@/components/SettingsView';
 import { PricingView } from '@/components/PricingView';
+import { DocsView } from '@/components/DocsView';
 import { AuthModal } from '@/components/AuthModal';
 import { LandingView } from '@/components/LandingView';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -265,6 +266,8 @@ function MainApp() {
             {activeTab === 'pricing' && <PricingView />}
 
             {activeTab === 'settings' && <SettingsView onNavigateTab={setActiveTab} />}
+
+            {activeTab === 'docs' && <DocsView onNavigateTab={setActiveTab} />}
           </>
         )}
       </main>

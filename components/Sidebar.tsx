@@ -15,7 +15,8 @@ import {
   X,
   CreditCard,
   Clock,
-  Sparkles
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { usePlanAccess } from '@/hooks/usePlanAccess';
@@ -49,6 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'tasks', label: 'Tasks & Follow-ups', icon: CheckSquare2 },
     { id: 'pricing', label: 'Plans & Billing', icon: CreditCard },
     { id: 'settings', label: 'Settings & Integrations', icon: Settings },
+    { id: 'docs', label: 'Docs', icon: BookOpen },
   ];
 
   return (

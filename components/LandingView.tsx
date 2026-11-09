@@ -16,8 +16,10 @@ import {
   TrendingUp,
   Clock,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  BookOpen
 } from 'lucide-react';
+import Link from 'next/link';
 import { AuthModal } from '@/components/AuthModal';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -53,6 +55,16 @@ export const LandingView: React.FC<LandingViewProps> = ({ onLoginSuccess }) => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Docs Navigation Link */}
+            <Link
+              href="/docs"
+              className="px-3 py-2 sm:py-2.5 rounded-xl glass-card text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-white transition-colors cursor-pointer border shadow-sm flex items-center gap-1.5 text-xs font-semibold"
+              title="Documentation and Guides"
+            >
+              <BookOpen className="w-4 h-4 text-blue-500" />
+              <span>Docs</span>
+            </Link>
+
             {/* Theme Switcher Toggle */}
             <button
               onClick={toggleTheme}
